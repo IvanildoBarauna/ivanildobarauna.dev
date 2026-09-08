@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import {
   FaArrowUp,
+  FaArrowDown,
   FaChartBar,
   FaCloud,
   FaCloudUploadAlt,
@@ -23,6 +24,7 @@ import type { Certification, Formation } from '@/app/education/interfaces';
 import type { SocialLink } from '@/app/social-links/interfaces';
 import { socialIconMap } from '@/utils/socialIconMap';
 import CvDownloadButton from '@/components/CvDownloadButton';
+import { getCentredEntryProgress, getStepIndex, getStickyTrackProgress } from '@/utils/scrollMotion';
 
 type Props = {
   experiences: Record<string, Experience[]>;
@@ -52,10 +54,11 @@ function TypingSnippet({ segments, className = 'project-code', label }: { segmen
       return;
     }
 
+    let timer = 0;
     const startTyping = () => {
       if (startedRef.current) return;
       startedRef.current = true;
-      const timer = window.setInterval(() => {
+      timer = window.setInterval(() => {
         setVisibleLength(current => {
           const next = Math.min(totalLength, current + 8);
           if (next === totalLength) window.clearInterval(timer);
@@ -70,7 +73,10 @@ function TypingSnippet({ segments, className = 'project-code', label }: { segmen
       }
     }, { threshold: 0.2 });
     observer.observe(container);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.clearInterval(timer);
+    };
   }, [totalLength]);
 
   let charactersLeft = visibleLength;
@@ -155,104 +161,139 @@ export default function PortfolioExperience({
   socialLinks,
 }: Props) {
   const atlasSectionRef = useRef<HTMLElement>(null);
+  const atlasVisualRef = useRef<HTMLDivElement>(null);
   const featuredSolutionRef = useRef<HTMLDivElement>(null);
+  const pipelinePanelRef = useRef<HTMLDivElement>(null);
   const experienceSectionRef = useRef<HTMLElement>(null);
-  const companies = Object.entries(experiences);
-  const experienceSteps = companies.flatMap(([company, roles], companyIndex) => roles.map((role, roleIndex) => ({ company, roles, role, companyIndex, roleIndex })));
-  const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
+  const experienceTrackRef = useRef<HTMLDivElement>(null);
   const activeExperienceIndexRef = useRef(0);
+  const experienceStaticRef = useRef(false);
+  const companies = useMemo(() => Object.entries(experiences), [experiences]);
+  const experienceSteps = useMemo(
+    () => companies.flatMap(([company, roles], companyIndex) => roles.map((role, roleIndex) => ({ company, roles, role, companyIndex, roleIndex }))),
+    [companies],
+  );
+  const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
+  const [isExperienceStatic, setIsExperienceStatic] = useState(false);
   const otherProjects = projects.slice(1);
   const certificationList = Object.values(certifications).flat();
   const activeExperience = experienceSteps[activeExperienceIndex] ?? experienceSteps[0];
 
   useEffect(() => {
     const section = atlasSectionRef.current;
+    const atlasVisual = atlasVisualRef.current;
     const solution = featuredSolutionRef.current;
-    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (!section || !solution) return;
+    const pipelinePanel = pipelinePanelRef.current;
+    if (!section || !atlasVisual || !solution || !pipelinePanel) return;
 
-    if (reducedMotion) {
-      section.style.setProperty('--atlas-progress', '1');
-      solution.style.setProperty('--solution-progress', '1');
-      section.dataset.atlasComplete = 'true';
-      solution.dataset.solutionComplete = 'true';
-      return;
-    }
+    const staticMotionQuery = window.matchMedia?.('(max-width: 760px), (max-height: 700px), (hover: none) and (pointer: coarse), (prefers-reduced-motion: reduce)');
 
     let frameId = 0;
-    const updateAtlasProgress = () => {
-      const bounds = section.getBoundingClientRect();
-      // The assembly follows the scroll and concludes when the atlas settles
-      // into the centre of the viewport, rather than before it is in focus.
-      const progress = Math.min(1, Math.max(0, (window.innerHeight * 0.72 - bounds.top) / (window.innerHeight * 0.72)));
-      section.style.setProperty('--atlas-progress', progress.toFixed(3));
-
-      if (progress >= 0.9) section.dataset.atlasComplete = 'true';
-
+    const updateSceneProgress = () => {
+      // Read all geometry before writing styles to avoid forced layout while scrolling.
+      const viewportHeight = window.innerHeight;
+      const sectionBounds = section.getBoundingClientRect();
+      const atlasBounds = atlasVisual.getBoundingClientRect();
       const solutionBounds = solution.getBoundingClientRect();
-      const solutionCompletionTop = (window.innerHeight - solutionBounds.height) / 2;
-      const solutionStartTop = window.innerHeight * 0.78;
-      const solutionProgress = Math.min(1, Math.max(0,
-        (solutionStartTop - solutionBounds.top) / (solutionStartTop - solutionCompletionTop),
-      ));
+      const pipelineBounds = pipelinePanel.getBoundingClientRect();
+      const isStatic = staticMotionQuery?.matches ?? false;
+      const atlasProgress = isStatic ? 1 : getCentredEntryProgress(atlasBounds, viewportHeight);
+      const solutionProgress = isStatic ? 1 : getCentredEntryProgress(solutionBounds, viewportHeight, 0.98, 0.5);
+      const atlasIsVisible = sectionBounds.bottom > 0 && sectionBounds.top < viewportHeight;
+      const solutionIsVisible = pipelineBounds.bottom > 0 && pipelineBounds.top < viewportHeight;
+
+      section.style.setProperty('--atlas-progress', atlasProgress.toFixed(3));
       solution.style.setProperty('--solution-progress', solutionProgress.toFixed(3));
-      if (solutionProgress >= 0.9) solution.dataset.solutionComplete = 'true';
+      section.dataset.atlasComplete = atlasProgress >= 0.999 ? 'true' : 'false';
+      solution.dataset.solutionComplete = solutionProgress >= 0.999 ? 'true' : 'false';
+      section.dataset.motionActive = atlasIsVisible ? 'true' : 'false';
+      solution.dataset.motionActive = solutionIsVisible ? 'true' : 'false';
       frameId = 0;
     };
     const onScroll = () => {
-      if (!frameId) frameId = window.requestAnimationFrame(updateAtlasProgress);
+      if (!frameId) frameId = window.requestAnimationFrame(updateSceneProgress);
     };
 
-    updateAtlasProgress();
+    const resizeObserver = 'ResizeObserver' in window ? new ResizeObserver(onScroll) : null;
+    resizeObserver?.observe(atlasVisual);
+    resizeObserver?.observe(solution);
+    updateSceneProgress();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    staticMotionQuery?.addEventListener?.('change', onScroll);
     return () => {
       window.cancelAnimationFrame(frameId);
+      resizeObserver?.disconnect();
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      staticMotionQuery?.removeEventListener?.('change', onScroll);
     };
   }, []);
 
   useEffect(() => {
     const section = experienceSectionRef.current;
-    if (!section || experienceSteps.length < 2) return;
-    if (window.matchMedia?.('(max-width: 760px), (prefers-reduced-motion: reduce)').matches) return;
+    const track = experienceTrackRef.current;
+    if (!section || !track || experienceSteps.length < 2) return;
 
-    let coolingDown = false;
-    let cooldownId = 0;
-    const onWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) < 4) return;
+    const staticExperienceQuery = window.matchMedia?.('(max-width: 840px), (max-height: 700px), (hover: none) and (pointer: coarse), (prefers-reduced-motion: reduce)');
+    let frameId = 0;
 
-      const bounds = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const isInLockZone = bounds.top <= viewportHeight * 0.16 && bounds.bottom >= viewportHeight * 0.84;
-      if (!isInLockZone) return;
-
-      const direction = event.deltaY > 0 ? 1 : -1;
-      const currentIndex = activeExperienceIndexRef.current;
-      const isLeavingForward = direction > 0 && currentIndex === experienceSteps.length - 1;
-      const isLeavingBackward = direction < 0 && currentIndex === 0;
-      if (isLeavingForward || isLeavingBackward) return;
-
-      event.preventDefault();
-      if (Math.abs(bounds.top) > 1) {
-        window.scrollTo({ top: window.scrollY + bounds.top, behavior: 'auto' });
+    const updateExperience = () => {
+      const isStatic = staticExperienceQuery?.matches ?? false;
+      if (experienceStaticRef.current !== isStatic) {
+        experienceStaticRef.current = isStatic;
+        setIsExperienceStatic(isStatic);
       }
-      if (coolingDown) return;
+      section.dataset.experienceStatic = isStatic ? 'true' : 'false';
 
-      const nextIndex = Math.max(0, Math.min(experienceSteps.length - 1, currentIndex + direction));
-      activeExperienceIndexRef.current = nextIndex;
-      setActiveExperienceIndex(nextIndex);
-      coolingDown = true;
-      cooldownId = window.setTimeout(() => { coolingDown = false; }, 280);
+      if (isStatic) {
+        section.style.setProperty('--experience-progress', '0');
+        section.dataset.motionActive = 'false';
+        frameId = 0;
+        return;
+      }
+
+      const bounds = track.getBoundingClientRect();
+      const progress = getStickyTrackProgress(bounds.top, bounds.height, window.innerHeight);
+      const nextIndex = getStepIndex(progress, experienceSteps.length);
+      section.style.setProperty('--experience-progress', progress.toFixed(3));
+      section.dataset.motionActive = bounds.bottom > 0 && bounds.top < window.innerHeight ? 'true' : 'false';
+      if (activeExperienceIndexRef.current !== nextIndex) {
+        activeExperienceIndexRef.current = nextIndex;
+        setActiveExperienceIndex(nextIndex);
+      }
+      frameId = 0;
     };
 
-    window.addEventListener('wheel', onWheel, { passive: false });
+    const scheduleUpdate = () => {
+      if (!frameId) frameId = window.requestAnimationFrame(updateExperience);
+    };
+    const resizeObserver = 'ResizeObserver' in window ? new ResizeObserver(scheduleUpdate) : null;
+    resizeObserver?.observe(track);
+    updateExperience();
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+    staticExperienceQuery?.addEventListener?.('change', scheduleUpdate);
     return () => {
-      window.clearTimeout(cooldownId);
-      window.removeEventListener('wheel', onWheel);
+      window.cancelAnimationFrame(frameId);
+      resizeObserver?.disconnect();
+      window.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
+      staticExperienceQuery?.removeEventListener?.('change', scheduleUpdate);
     };
   }, [experienceSteps.length]);
+
+  const goToExperienceStep = (index: number) => {
+    const track = experienceTrackRef.current;
+    if (!track || experienceSteps.length < 2 || isExperienceStatic) return;
+    const boundedIndex = Math.min(experienceSteps.length - 1, Math.max(0, index));
+    const trackTop = window.scrollY + track.getBoundingClientRect().top;
+    const scrollRange = Math.max(0, track.offsetHeight - window.innerHeight);
+    window.scrollTo({
+      top: trackTop + (boundedIndex / (experienceSteps.length - 1)) * scrollRange,
+      behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+  };
 
   return (
     <main className="portfolio-shell">
@@ -295,7 +336,7 @@ export default function PortfolioExperience({
           </div>
         </div>
 
-        <div className="portfolio-atlas" aria-label="Mapa de competências conectando dados e software">
+        <div ref={atlasVisualRef} className="portfolio-atlas" aria-label="Mapa de competências conectando dados e software">
           <div className="atlas-column">{softwareSkills.map(item => <SkillNode key={item.title} item={item} side="software" position="left" />)}</div>
           <div className="atlas-venn" aria-hidden="true">
             <div className="atlas-circle atlas-circle--software"><span>Software</span></div>
@@ -333,7 +374,7 @@ export default function PortfolioExperience({
                 <a className="portfolio-outline" href="https://github.com/IvanildoBarauna/data-pipeline-async-ingest" target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> Async Pipeline <FaExternalLinkAlt aria-hidden="true" /></a>
             </div>
           </div>
-          <div className="pipeline-panel" aria-label="Fluxo da solução de processamento de eventos em tempo real">
+          <div ref={pipelinePanelRef} className="pipeline-panel" aria-label="Fluxo da solução de processamento de eventos em tempo real">
             <div className="pipeline-labels pipeline-labels--solution"><span>Produção de eventos</span><span>Processamento reativo</span><span>Armazenamento analítico</span></div>
             <div className="pipeline-architecture-note"><FaRocket /><span>Arquitetura orientada a eventos</span><small>Pub/Sub é o adaptador que desacopla a Producer API dos consumidores</small></div>
             <div className="pipeline-flow pipeline-flow--solution">
@@ -375,33 +416,69 @@ export default function PortfolioExperience({
         </div>
       </section>
 
-      <section ref={experienceSectionRef} id="experience" data-testid="experience-section" className="portfolio-experience">
-        <div className="experience-scroll-track">
+      <section
+        ref={experienceSectionRef}
+        id="experience"
+        data-testid="experience-section"
+        className="portfolio-experience"
+        style={{ '--experience-steps': Math.max(1, experienceSteps.length - 1) } as CSSProperties}
+      >
+        <div ref={experienceTrackRef} className="experience-scroll-track">
           <div className="experience-sticky-stage">
             <div className="portfolio-heading"><p className="portfolio-eyebrow"><span /> Experiência</p></div>
             {activeExperience && <div className="experience-active-company">
               <span className="company-logo company-logo--focus">{activeExperience.role.companyLogo && <Image src={activeExperience.role.companyLogo} alt={`Logo ${activeExperience.company}`} width={56} height={56} />}</span>
               <div><p>{activeExperience.role.period}</p><h3>{activeExperience.company.replace(' Administradora de Consórcio Ltda', '')}</h3><span>{activeExperience.role.location}</span></div>
             </div>}
-            <div className="experience-role-deck" aria-live="polite">
+            {activeExperience && (
+              <p className="sr-only" aria-live="polite" aria-atomic="true">
+                {`${activeExperience.company}, ${activeExperience.role.position}, etapa ${activeExperienceIndex + 1} de ${experienceSteps.length}`}
+              </p>
+            )}
+            <div className="experience-role-deck" aria-label="Trajetória profissional">
               {experienceSteps.map((step, index) => (
-                <article key={step.role.id} className={`experience-role-card ${index === activeExperienceIndex ? 'is-active' : index < activeExperienceIndex ? 'is-past' : 'is-future'}`}>
+                <article
+                  key={step.role.id}
+                  className={`experience-role-card ${index === activeExperienceIndex ? 'is-active' : index < activeExperienceIndex ? 'is-past' : 'is-future'}`}
+                  aria-hidden={!isExperienceStatic && index !== activeExperienceIndex}
+                >
+                  <div className="experience-card-company">
+                    <span className="company-logo">{step.role.companyLogo && <Image src={step.role.companyLogo} alt="" width={30} height={30} />}</span>
+                    <span><strong>{step.company.replace(' Administradora de Consórcio Ltda', '')}</strong><small>{step.role.period} · {step.role.location}</small></span>
+                  </div>
                   <span className="experience-role-count">{step.roles.length > 1 ? `${step.roleIndex + 1} de ${step.roles.length} cargos na empresa` : 'Experiência profissional'}</span>
                   <h3>{step.role.position}</h3>
                   <p>{descriptionText(step.role.description)}</p>
-                  <small>{step.role.skills?.split(';').slice(0, 5).join(' · ')}</small>
+                  <small className="experience-role-skills">{step.role.skills?.split(';').slice(0, 5).join(' · ')}</small>
                 </article>
                 ))}
             </div>
             <div className="experience-company-stack" aria-label="Empresas da trajetória profissional">
               {companies.map(([company, roles], index) => (
-                <div key={company} className={`experience-company-preview ${index === activeExperience?.companyIndex ? 'is-active' : ''}`} style={{ '--stack-index': index } as CSSProperties}>
+                <button
+                  type="button"
+                  key={company}
+                  className={`experience-company-preview ${index === activeExperience?.companyIndex ? 'is-active' : ''}`}
+                  style={{ '--stack-index': index } as CSSProperties}
+                  aria-pressed={index === activeExperience?.companyIndex}
+                  onClick={() => goToExperienceStep(experienceSteps.findIndex(step => step.companyIndex === index))}
+                >
                   <span className="company-logo">{roles[0]?.companyLogo && <Image src={roles[0].companyLogo} alt="" width={30} height={30} />}</span>
                   <strong>{company.replace(' Administradora de Consórcio Ltda', '')}</strong>
-                </div>
+                </button>
               ))}
             </div>
-            <p className="experience-scroll-hint"><span /> Continue rolando para navegar pela trajetória</p>
+            {experienceSteps.length > 1 && (
+              <div className="experience-navigation">
+                <div className="experience-scroll-hint"><span /> <p>Role para navegar pela trajetória</p></div>
+                <div className="experience-progress" aria-hidden="true"><i /></div>
+                <span className="experience-step-count">{String(activeExperienceIndex + 1).padStart(2, '0')} / {String(experienceSteps.length).padStart(2, '0')}</span>
+                <div className="experience-step-buttons" aria-label="Controles da trajetória">
+                  <button type="button" onClick={() => goToExperienceStep(activeExperienceIndex - 1)} disabled={activeExperienceIndex === 0} aria-label="Experiência anterior"><FaArrowUp aria-hidden="true" /></button>
+                  <button type="button" onClick={() => goToExperienceStep(activeExperienceIndex + 1)} disabled={activeExperienceIndex === experienceSteps.length - 1} aria-label="Próxima experiência"><FaArrowDown aria-hidden="true" /></button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
