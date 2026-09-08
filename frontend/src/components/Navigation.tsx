@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import ReactCountryFlag from 'react-country-flag';
 import { supportedLanguages, useLanguage } from '@/i18n/LanguageProvider';
 
 const items = [
@@ -9,6 +10,12 @@ const items = [
   { id: 'projects', label: 'Projetos', sections: ['projects'] },
   { id: 'experience', label: 'Experiência', sections: ['experience', 'education'] },
 ];
+
+const languageFlags: Record<(typeof supportedLanguages)[number], string> = {
+  pt: 'BR',
+  en: 'US',
+  es: 'ES',
+};
 
 export default function Navigation() {
   const { language, setLanguage, t } = useLanguage();
@@ -57,7 +64,10 @@ export default function Navigation() {
         {items.map(item => <a key={item.id} href={`#${item.id}`} className={active === item.id ? 'active' : ''} aria-current={active === item.id ? 'page' : undefined} onClick={() => { setActive(item.id); setOpen(false); }}>{t(item.label)}</a>)}
       </nav>
       <div className="atlas-language" role="group" aria-label={t('Selecionar idioma')}>
-        {supportedLanguages.map(code => <button type="button" key={code} className={language === code ? 'active' : ''} aria-pressed={language === code} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>)}
+        {supportedLanguages.map(code => <button type="button" key={code} className={language === code ? 'active' : ''} aria-pressed={language === code} onClick={() => setLanguage(code)}>
+          <ReactCountryFlag countryCode={languageFlags[code]} svg aria-hidden="true" title="" />
+          <span>{code.toUpperCase()}</span>
+        </button>)}
       </div>
       <button className="atlas-menu" onClick={() => setOpen(value => !value)} aria-label={t(open ? 'Fechar menu' : 'Abrir menu')} aria-expanded={open}>
         {open ? <FaTimes /> : <FaBars />}

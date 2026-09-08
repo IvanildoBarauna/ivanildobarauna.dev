@@ -1,7 +1,12 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import Navigation from '@/components/Navigation';
 import { getLanguageFromUrl, getLocalizedUrl, LanguageProvider } from '@/i18n/LanguageProvider';
+
+vi.mock('react-country-flag', () => ({
+  __esModule: true,
+  default: ({ countryCode }: { countryCode: string }) => <span data-testid={`flag-${countryCode}`} />,
+}));
 
 describe('portfolio internationalization', () => {
   /** Verifies supported URL parsing and the Portuguese fallback. */
@@ -20,6 +25,10 @@ describe('portfolio internationalization', () => {
   it('switches the visible language and updates the URL', async () => {
     window.history.replaceState({}, '', '/?lang=pt');
     render(<LanguageProvider><Navigation /></LanguageProvider>);
+
+    expect(screen.getByTestId('flag-BR')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-US')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-ES')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'EN' }));
 
