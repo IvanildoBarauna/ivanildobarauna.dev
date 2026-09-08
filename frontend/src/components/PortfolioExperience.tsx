@@ -305,7 +305,7 @@ export default function PortfolioExperience({
         <div className="portfolio-hero-copy">
           <h1>Ivanildo<br />Barauna</h1>
           <p className="portfolio-eyebrow"><span /> {t('Senior Software Engineer @ Mercado Livre')}</p>
-          <p className="portfolio-lead">{t('Projeto e construo sistemas que conectam Engenharia de Software e Dados, transformando insights analíticos em sistemas de decisão prontos para produção — da ingestão à ação.')}</p>
+          <p className="portfolio-lead">{t('Projeto e construo sistemas que conectam Engenharia de Software, Dados e Arquitetura para transformar problemas complexos de negócio em decisões automatizadas e soluções prontas para produção — da ingestão à ação.')}</p>
           <div className="portfolio-hero-socials" aria-label={t('Redes sociais')}>
             {socialLinks.map(link => {
               const Icon = socialIconMap[link.type];
@@ -336,11 +336,7 @@ export default function PortfolioExperience({
         <div className="portfolio-heading portfolio-heading--center">
           <div className="portfolio-heading-copy">
             <h2>{t('Resolução de problemas de ponta a ponta')}</h2>
-            <p>{t('Software, dados e arquitetura juntos para transformar problemas complexos de negócio em sistemas de decisão prontos para produção.')}</p>
-            <div className="portfolio-about-summary">
-              <p>{t('Senior Software Engineer com forte experiência em Data Engineering, atuando na interseção entre software, dados e tomada de decisão.')}</p>
-              <p>{t('Minha abordagem conecta problema de negócio, arquitetura, dados, software e decisão em soluções escaláveis, com foco em DDD, arquitetura hexagonal, APIs e sistemas distribuídos.')}</p>
-            </div>
+            <p>{t('Software gera dados. Dados alimentam analytics, decisões e impacto.')}</p>
           </div>
         </div>
 
