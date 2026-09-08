@@ -3,12 +3,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaDownload, FaChevronDown } from 'react-icons/fa';
 import ReactCountryFlag from 'react-country-flag';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 type Props = {
   variant?: 'default' | 'portfolio';
 };
 
 export default function CvDownloadButton({ variant = 'default' }: Props) {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +53,7 @@ export default function CvDownloadButton({ variant = 'default' }: Props) {
           onClick={() => setIsOpen(!isOpen)}
         >
           <FaDownload className="w-5 h-5 mr-2" />
-          Download CV
+          {t('Download CV')}
           <FaChevronDown className="ml-2 w-4 h-4" />
         </button>
       </div>

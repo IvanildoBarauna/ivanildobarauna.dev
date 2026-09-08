@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -32,12 +33,14 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <div className="min-h-screen bg-background">
-          <Navigation />
-          <div className="flex flex-col">
-            {children}
+        <LanguageProvider>
+          <div className="min-h-screen bg-background">
+            <Navigation />
+            <div className="flex flex-col">
+              {children}
+            </div>
           </div>
-        </div>
+        </LanguageProvider>
       </body>
     </html>
   );

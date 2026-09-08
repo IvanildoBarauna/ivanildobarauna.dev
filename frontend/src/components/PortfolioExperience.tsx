@@ -25,6 +25,7 @@ import type { SocialLink } from '@/app/social-links/interfaces';
 import { socialIconMap } from '@/utils/socialIconMap';
 import CvDownloadButton from '@/components/CvDownloadButton';
 import { getCentredEntryProgress, getStepIndex, getStickyTrackProgress } from '@/utils/scrollMotion';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 type Props = {
   experiences: Record<string, Experience[]>;
@@ -90,9 +91,10 @@ function TypingSnippet({ segments, className = 'project-code', label }: { segmen
 }
 
 function ProjectCodeExample({ projectName }: { projectName: string }) {
+  const { t } = useLanguage();
   if (projectName === 'api-to-dataframe') {
     return (
-      <TypingSnippet label="Exemplo de uso em Python" segments={[
+      <TypingSnippet label={t('Exemplo de uso em Python')} segments={[
         { text: 'from', className: 'code-keyword' }, { text: ' api_to_dataframe ' }, { text: 'import', className: 'code-keyword' }, { text: ' ClientBuilder\n\n' },
         { text: 'client = ' }, { text: 'ClientBuilder', className: 'code-function' }, { text: '(\n' },
         { text: '  endpoint=' }, { text: '"https://api.example.com/items"', className: 'code-string' }, { text: '\n' },
@@ -105,7 +107,7 @@ function ProjectCodeExample({ projectName }: { projectName: string }) {
 
   return (
     <>
-      <TypingSnippet label="Exemplo de uso em Python" segments={[
+      <TypingSnippet label={t('Exemplo de uso em Python')} segments={[
         { text: 'from', className: 'code-keyword' }, { text: ' currency_quote ' }, { text: 'import', className: 'code-keyword' }, { text: ' ClientBuilder\n\n' },
         { text: 'client = ' }, { text: 'ClientBuilder', className: 'code-function' }, { text: '([\n' },
         { text: '  "USD-BRL", "EUR-BRL"', className: 'code-string' }, { text: '\n])\n' },
@@ -115,8 +117,8 @@ function ProjectCodeExample({ projectName }: { projectName: string }) {
         { text: 'print', className: 'code-function' }, { text: '(client.' }, { text: 'get_history_quote', className: 'code-function' }, { text: '(reference_date=' }, { text: '20220101', className: 'code-number' }, { text: '))' },
       ]} />
       <div className="project-response-example">
-        <span>Response example</span>
-        <pre className="project-response-code" aria-label="Exemplo de resposta JSON"><code>[{`\n`}  {'{'}{`\n`}    <span className="code-property">&quot;currency_pair&quot;</span>: <span className="code-string">&quot;USD-BRL&quot;</span>,{`\n`}    <span className="code-property">&quot;currency_pair_name&quot;</span>: <span className="code-string">&quot;Dólar Americano/Real Brasileiro&quot;</span>,{`\n`}    <span className="code-property">&quot;base_currency_code&quot;</span>: <span className="code-string">&quot;USD&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_currency_code&quot;</span>: <span className="code-string">&quot;BRL&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_timestamp&quot;</span>: <span className="code-number">1727201744</span>,{`\n`}    <span className="code-property">&quot;bid_price&quot;</span>: <span className="code-string">&quot;5.4579&quot;</span>,{`\n`}    <span className="code-property">&quot;ask_price&quot;</span>: <span className="code-string">&quot;5.4589&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_extracted_at&quot;</span>: <span className="code-number">1727201753</span>{`\n`}  {'}'}{`\n`}]</code></pre>
+        <span>{t('Response example')}</span>
+        <pre className="project-response-code" aria-label={t('Exemplo de resposta JSON')}><code>[{`\n`}  {'{'}{`\n`}    <span className="code-property">&quot;currency_pair&quot;</span>: <span className="code-string">&quot;USD-BRL&quot;</span>,{`\n`}    <span className="code-property">&quot;currency_pair_name&quot;</span>: <span className="code-string">&quot;Dólar Americano/Real Brasileiro&quot;</span>,{`\n`}    <span className="code-property">&quot;base_currency_code&quot;</span>: <span className="code-string">&quot;USD&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_currency_code&quot;</span>: <span className="code-string">&quot;BRL&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_timestamp&quot;</span>: <span className="code-number">1727201744</span>,{`\n`}    <span className="code-property">&quot;bid_price&quot;</span>: <span className="code-string">&quot;5.4579&quot;</span>,{`\n`}    <span className="code-property">&quot;ask_price&quot;</span>: <span className="code-string">&quot;5.4589&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_extracted_at&quot;</span>: <span className="code-number">1727201753</span>{`\n`}  {'}'}{`\n`}]</code></pre>
       </div>
     </>
   );
@@ -143,10 +145,11 @@ function SkillNode({
   side: 'data' | 'software';
   position: 'left' | 'right';
 }) {
+  const { t } = useLanguage();
   const Icon = item.icon;
   return (
     <div className={`atlas-skill atlas-skill--${side} atlas-skill--${position}`}>
-      <div className="atlas-skill-copy"><strong>{item.title}</strong><span>{item.detail}</span></div>
+      <div className="atlas-skill-copy"><strong>{t(item.title)}</strong><span>{t(item.detail)}</span></div>
       <span className="atlas-icon"><Icon aria-hidden="true" /></span>
       <i aria-hidden="true" />
     </div>
@@ -160,6 +163,7 @@ export default function PortfolioExperience({
   certifications,
   socialLinks,
 }: Props) {
+  const { t } = useLanguage();
   const atlasSectionRef = useRef<HTMLElement>(null);
   const atlasVisualRef = useRef<HTMLDivElement>(null);
   const featuredSolutionRef = useRef<HTMLDivElement>(null);
@@ -300,9 +304,9 @@ export default function PortfolioExperience({
       <section id="home" data-testid="hero-section" className="portfolio-hero">
         <div className="portfolio-hero-copy">
           <h1>Ivanildo<br />Barauna</h1>
-          <p className="portfolio-eyebrow"><span /> Data &amp; Software Engineer</p>
-          <p className="portfolio-lead">Projeto e construo sistemas que conectam Engenharia de Software e Dados, transformando insights analíticos em sistemas de decisão prontos para produção — da ingestão à ação.</p>
-          <div className="portfolio-hero-socials" aria-label="Redes sociais">
+          <p className="portfolio-eyebrow"><span /> {t('Data & Software Engineer')}</p>
+          <p className="portfolio-lead">{t('Projeto e construo sistemas que conectam Engenharia de Software e Dados, transformando insights analíticos em sistemas de decisão prontos para produção — da ingestão à ação.')}</p>
+          <div className="portfolio-hero-socials" aria-label={t('Redes sociais')}>
             {socialLinks.map(link => {
               const Icon = socialIconMap[link.type];
               return Icon ? (
@@ -313,35 +317,35 @@ export default function PortfolioExperience({
             })}
           </div>
           <CvDownloadButton variant="portfolio" />
-          <div className="portfolio-stats portfolio-hero-stats" aria-label="Resumo profissional">
-            <span><strong>+14 anos</strong> de experiência profissional na área de tecnologia</span>
+          <div className="portfolio-stats portfolio-hero-stats" aria-label={t('Resumo profissional')}>
+            <span><strong>{t('+14 anos')}</strong> {t('de experiência profissional na área de tecnologia')}</span>
           </div>
-          <p className="portfolio-proof" aria-label="Áreas de especialidade">
+          <p className="portfolio-proof" aria-label={t('Áreas de especialidade')}>
             <span><strong>Analytics</strong><i /></span>
             <span><strong>Software Engineering</strong><i /></span>
             <span><strong>Data Pipelines</strong></span>
           </p>
-          <a className="portfolio-scroll-cue" href="#about"><span>Explore a solução</span><i aria-hidden="true">↓</i></a>
+          <a className="portfolio-scroll-cue" href="#about"><span>{t('Explore a solução')}</span><i aria-hidden="true">↓</i></a>
         </div>
         <div className="portfolio-portrait">
-          <Image src="/images/profile/profile-professional-casual.png" alt="Ivanildo Barauna com camiseta cinza e braços cruzados" fill priority sizes="(max-width: 760px) 100vw, 52vw" />
+          <Image src="/images/profile/profile-professional-casual.png" alt={t('Ivanildo Barauna com camiseta cinza e braços cruzados')} fill priority sizes="(max-width: 760px) 100vw, 52vw" />
         </div>
       </section>
 
       <section ref={atlasSectionRef} id="about" data-testid="about-section" className="portfolio-atlas-section">
         <div className="portfolio-heading portfolio-heading--center">
           <div className="portfolio-heading-copy">
-            <h2>Resolução de problemas de ponta a ponta</h2>
-            <p>Software gera dados. Dados alimentam analytics, decisões e impacto.</p>
+            <h2>{t('Resolução de problemas de ponta a ponta')}</h2>
+            <p>{t('Software gera dados. Dados alimentam analytics, decisões e impacto.')}</p>
           </div>
         </div>
 
-        <div ref={atlasVisualRef} className="portfolio-atlas" aria-label="Mapa de competências conectando dados e software">
+        <div ref={atlasVisualRef} className="portfolio-atlas" aria-label={t('Mapa de competências conectando dados e software')}>
           <div className="atlas-column">{softwareSkills.map(item => <SkillNode key={item.title} item={item} side="software" position="left" />)}</div>
           <div className="atlas-venn" aria-hidden="true">
             <div className="atlas-circle atlas-circle--software"><span>Software</span></div>
-            <div className="atlas-circle atlas-circle--data"><span>Dados</span></div>
-            <div className="atlas-intersection"><FaDatabase /><span>Solução de<br />ponta a ponta</span></div>
+            <div className="atlas-circle atlas-circle--data"><span>{t('Dados')}</span></div>
+            <div className="atlas-intersection"><FaDatabase /><span>{t('Solução de ponta a ponta')}</span></div>
           </div>
           <div className="atlas-column atlas-column--data-flow">
             <div className="atlas-sql-connector" aria-hidden="true"><span>SQL</span><i /><i /></div>
@@ -350,62 +354,62 @@ export default function PortfolioExperience({
         </div>
 
         <div className="portfolio-outcomes">
-          <article><span><FaMapMarkerAlt /></span><h3>Entender o problema</h3><p>Contexto antes da tecnologia.</p></article>
+          <article><span><FaMapMarkerAlt /></span><h3>{t('Entender o problema')}</h3><p>{t('Contexto antes da tecnologia.')}</p></article>
           <span className="outcome-arrow" aria-hidden="true">→</span>
-          <article><span><FaCode /></span><h3>Construir a solução</h3><p>Dados e software, juntos.</p></article>
+          <article><span><FaCode /></span><h3>{t('Construir a solução')}</h3><p>{t('Dados e software, juntos.')}</p></article>
           <span className="outcome-arrow" aria-hidden="true">→</span>
-          <article><span><FaRocket /></span><h3>Gerar impacto</h3><p>Tecnologia que entrega valor.</p></article>
+          <article><span><FaRocket /></span><h3>{t('Gerar impacto')}</h3><p>{t('Tecnologia que entrega valor.')}</p></article>
         </div>
       </section>
 
       <section id="projects" data-testid="projects-section" className="portfolio-projects">
         <div ref={featuredSolutionRef} className="portfolio-featured">
           <div className="portfolio-featured-copy">
-            <p className="portfolio-eyebrow"><span /> Solução em destaque</p>
+            <p className="portfolio-eyebrow"><span /> {t('Solução em destaque')}</p>
             <h2>Real-time Event<br />Processing Pipeline</h2>
-            <p>Uma solução end-to-end que transforma dados recebidos por requisições de API em informações prontas para análise: a Producer API publica eventos no Pub/Sub; o pipeline assíncrono os processa no Dataflow e os armazena no BigQuery.</p>
+            <p>{t('Uma solução end-to-end que transforma dados recebidos por requisições de API em informações prontas para análise: a Producer API publica eventos no Pub/Sub; o pipeline assíncrono os processa no Dataflow e os armazena no BigQuery.')}</p>
             <ul>
-              <li>Software que gera eventos de negócio</li>
-              <li>Processamento assíncrono e escalável</li>
-              <li>Dados disponíveis para analytics</li>
+              <li>{t('Software que gera eventos de negócio')}</li>
+              <li>{t('Processamento assíncrono e escalável')}</li>
+              <li>{t('Dados disponíveis para analytics')}</li>
             </ul>
-            <div className="portfolio-repo-links" aria-label="Repositórios da solução">
+            <div className="portfolio-repo-links" aria-label={t('Repositórios da solução')}>
                 <a className="portfolio-outline" href="https://github.com/IvanildoBarauna/data-producer-api" target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> Producer API <FaExternalLinkAlt aria-hidden="true" /></a>
                 <a className="portfolio-outline" href="https://github.com/IvanildoBarauna/data-pipeline-async-ingest" target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> Async Pipeline <FaExternalLinkAlt aria-hidden="true" /></a>
             </div>
           </div>
-          <div ref={pipelinePanelRef} className="pipeline-panel" aria-label="Fluxo da solução de processamento de eventos em tempo real">
-            <div className="pipeline-labels pipeline-labels--solution"><span>Produção de eventos</span><span>Processamento reativo</span><span>Armazenamento analítico</span></div>
-            <div className="pipeline-architecture-note"><FaRocket /><span>Arquitetura orientada a eventos</span><small>Pub/Sub é o adaptador que desacopla a Producer API dos consumidores</small></div>
+          <div ref={pipelinePanelRef} className="pipeline-panel" aria-label={t('Fluxo da solução de processamento de eventos em tempo real')}>
+            <div className="pipeline-labels pipeline-labels--solution"><span>{t('Produção de eventos')}</span><span>{t('Processamento reativo')}</span><span>{t('Armazenamento analítico')}</span></div>
+            <div className="pipeline-architecture-note"><FaRocket /><span>{t('Arquitetura orientada a eventos')}</span><small>{t('Pub/Sub é o adaptador que desacopla a Producer API dos consumidores')}</small></div>
             <div className="pipeline-flow pipeline-flow--solution">
               <div className="producer-architecture">
-                <div className="producer-hexagon"><div className="producer-hexagon-content"><FaCode /><strong>Producer<br />API</strong><small>Arquitetura<br />hexagonal</small></div></div>
+                <div className="producer-hexagon"><div className="producer-hexagon-content"><FaCode /><strong>Producer<br />API</strong><small>{t('Arquitetura hexagonal')}</small></div></div>
                 <div className="producer-pubsub-port"><FaRocket /><span>Pub/Sub</span></div>
-                <div className="producer-event-label">Events Producer</div>
+                <div className="producer-event-label">{t('Events Producer')}</div>
               </div>
-              <span className="pipeline-connector pipeline-connector--events" aria-hidden="true"><small>publica eventos</small><span className="pipeline-event-line"><i /><i /><i /></span><b>→</b></span>
+              <span className="pipeline-connector pipeline-connector--events" aria-hidden="true"><small>{t('publica eventos')}</small><span className="pipeline-event-line"><i /><i /><i /></span><b>→</b></span>
               <div className="pipeline-stage">
-                <div className="pipeline-box pipeline-box--active"><FaCloud /><strong>Reactive<br />Pipeline</strong><small>Consome eventos</small><em>Apache Beam · Dataflow</em></div>
-                <div className="pipeline-stage-label">Ingest &amp; Process Events</div>
+                <div className="pipeline-box pipeline-box--active"><FaCloud /><strong>Reactive<br />Pipeline</strong><small>{t('Consome eventos')}</small><em>Apache Beam · Dataflow</em></div>
+                <div className="pipeline-stage-label">{t('Ingest & Process Events')}</div>
               </div>
-              <span className="pipeline-connector pipeline-connector--events" aria-hidden="true"><small>persiste</small><span className="pipeline-event-line"><i /><i /><i /></span><b>→</b></span>
+              <span className="pipeline-connector pipeline-connector--events" aria-hidden="true"><small>{t('persiste')}</small><span className="pipeline-event-line"><i /><i /><i /></span><b>→</b></span>
               <div className="pipeline-stage">
-                <div className="pipeline-box"><SiGooglebigquery /><strong>BigQuery</strong><small>Data warehouse</small><em>Pronto para analytics</em></div>
-                <div className="pipeline-stage-label pipeline-stage-label--storage">Store Processed Events</div>
+                <div className="pipeline-box"><SiGooglebigquery /><strong>BigQuery</strong><small>Data warehouse</small><em>{t('Pronto para analytics')}</em></div>
+                <div className="pipeline-stage-label pipeline-stage-label--storage">{t('Store Processed Events')}</div>
               </div>
             </div>
-            <div className="pipeline-observability"><strong>Observabilidade end-to-end</strong><em>Datadog</em><span>Metrics</span><i /><span>Logs</span><i /><span>Traces</span></div>
+            <div className="pipeline-observability"><strong>{t('Observabilidade end-to-end')}</strong><em>Datadog</em><span>Metrics</span><i /><span>Logs</span><i /><span>Traces</span></div>
           </div>
         </div>
         <div className="portfolio-project-list">
-          <p className="portfolio-eyebrow"><span /> Outros projetos</p>
+          <p className="portfolio-eyebrow"><span /> {t('Outros projetos')}</p>
           {otherProjects.map(project => (
             <article key={project.id} className="portfolio-project-showcase">
               <div className="portfolio-project-copy">
-                <p>Biblioteca Python</p>
+                <p>{t('Biblioteca Python')}</p>
                 <h3>{compactTitle(project.title)}</h3>
-                <p>{project.description}</p>
-                <a href={project.projectUrl} target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> Ver no GitHub <FaExternalLinkAlt aria-hidden="true" /></a>
+                <p>{t(descriptionText(project.description))}</p>
+                <a href={project.projectUrl} target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> {t('Ver no GitHub')} <FaExternalLinkAlt aria-hidden="true" /></a>
               </div>
               <div className="project-code-window">
                 <div className="project-code-window-bar"><span /><span /><span /><em>Python</em></div>
@@ -425,7 +429,7 @@ export default function PortfolioExperience({
       >
         <div ref={experienceTrackRef} className="experience-scroll-track">
           <div className="experience-sticky-stage">
-            <div className="portfolio-heading"><p className="portfolio-eyebrow"><span /> Experiência</p></div>
+            <div className="portfolio-heading"><p className="portfolio-eyebrow"><span /> {t('Experiência')}</p></div>
             {activeExperience && <div className="experience-active-company">
               <span className="company-logo company-logo--focus">{activeExperience.role.companyLogo && <Image src={activeExperience.role.companyLogo} alt={`Logo ${activeExperience.company}`} width={56} height={56} />}</span>
               <div><p>{activeExperience.role.period}</p><h3>{activeExperience.company.replace(' Administradora de Consórcio Ltda', '')}</h3><span>{activeExperience.role.location}</span></div>
@@ -435,7 +439,7 @@ export default function PortfolioExperience({
                 {`${activeExperience.company}, ${activeExperience.role.position}, etapa ${activeExperienceIndex + 1} de ${experienceSteps.length}`}
               </p>
             )}
-            <div className="experience-role-deck" aria-label="Trajetória profissional">
+            <div className="experience-role-deck" aria-label={t('Trajetória profissional')}>
               {experienceSteps.map((step, index) => (
                 <article
                   key={step.role.id}
@@ -446,14 +450,14 @@ export default function PortfolioExperience({
                     <span className="company-logo">{step.role.companyLogo && <Image src={step.role.companyLogo} alt="" width={30} height={30} />}</span>
                     <span><strong>{step.company.replace(' Administradora de Consórcio Ltda', '')}</strong><small>{step.role.period} · {step.role.location}</small></span>
                   </div>
-                  <span className="experience-role-count">{step.roles.length > 1 ? `${step.roleIndex + 1} de ${step.roles.length} cargos na empresa` : 'Experiência profissional'}</span>
-                  <h3>{step.role.position}</h3>
-                  <p>{descriptionText(step.role.description)}</p>
+                  <span className="experience-role-count">{step.roles.length > 1 ? `${step.roleIndex + 1} de ${step.roles.length} cargos na empresa` : t('Experiência profissional')}</span>
+                  <h3>{t(step.role.position)}</h3>
+                  <p>{t(descriptionText(step.role.description))}</p>
                   <small className="experience-role-skills">{step.role.skills?.split(';').slice(0, 5).join(' · ')}</small>
                 </article>
                 ))}
             </div>
-            <div className="experience-company-stack" aria-label="Empresas da trajetória profissional">
+            <div className="experience-company-stack" aria-label={t('Empresas da trajetória profissional')}>
               {companies.map(([company, roles], index) => (
                 <button
                   type="button"
@@ -470,12 +474,12 @@ export default function PortfolioExperience({
             </div>
             {experienceSteps.length > 1 && (
               <div className="experience-navigation">
-                <div className="experience-scroll-hint"><span /> <p>Role para navegar pela trajetória</p></div>
+                <div className="experience-scroll-hint"><span /> <p>{t('Role para navegar pela trajetória')}</p></div>
                 <div className="experience-progress" aria-hidden="true"><i /></div>
                 <span className="experience-step-count">{String(activeExperienceIndex + 1).padStart(2, '0')} / {String(experienceSteps.length).padStart(2, '0')}</span>
-                <div className="experience-step-buttons" aria-label="Controles da trajetória">
-                  <button type="button" onClick={() => goToExperienceStep(activeExperienceIndex - 1)} disabled={activeExperienceIndex === 0} aria-label="Experiência anterior"><FaArrowUp aria-hidden="true" /></button>
-                  <button type="button" onClick={() => goToExperienceStep(activeExperienceIndex + 1)} disabled={activeExperienceIndex === experienceSteps.length - 1} aria-label="Próxima experiência"><FaArrowDown aria-hidden="true" /></button>
+                <div className="experience-step-buttons" aria-label={t('Controles da trajetória')}>
+                  <button type="button" onClick={() => goToExperienceStep(activeExperienceIndex - 1)} disabled={activeExperienceIndex === 0} aria-label={t('Experiência anterior')}><FaArrowUp aria-hidden="true" /></button>
+                  <button type="button" onClick={() => goToExperienceStep(activeExperienceIndex + 1)} disabled={activeExperienceIndex === experienceSteps.length - 1} aria-label={t('Próxima experiência')}><FaArrowDown aria-hidden="true" /></button>
                 </div>
               </div>
             )}
@@ -484,16 +488,16 @@ export default function PortfolioExperience({
       </section>
 
       <section id="education" data-testid="education-section" className="portfolio-education">
-        <div className="portfolio-heading"><p className="portfolio-eyebrow"><span /> Formação</p><h2>Base técnica.<br />Aprendizado contínuo.</h2></div>
+        <div className="portfolio-heading"><p className="portfolio-eyebrow"><span /> {t('Formação')}</p><h2>{t('Base técnica. Aprendizado contínuo.')}</h2></div>
         <div className="portfolio-education-list">
-          {formations.map(formation => <article key={formation.id}><span>{formation.period}</span><h3>{formation.course}</h3><p>{formation.institution} · {formation.type}</p></article>)}
-          {certificationList.map(certification => <a key={certification.id} href={certification.credential_url} target="_blank" rel="noreferrer"><span>Certificação</span><h3>{certification.name}</h3><p>{certification.institution} <FaExternalLinkAlt /></p></a>)}
+          {formations.map(formation => <article key={formation.id}><span>{formation.period}</span><h3>{t(formation.course)}</h3><p>{formation.institution} · {t(formation.type)}</p></article>)}
+          {certificationList.map(certification => <a key={certification.id} href={certification.credential_url} target="_blank" rel="noreferrer"><span>{t('Certificação')}</span><h3>{t(certification.name)}</h3><p>{certification.institution} <FaExternalLinkAlt /></p></a>)}
         </div>
       </section>
 
       <footer className="portfolio-footer">
         <p>Ivanildo Barauna</p>
-        <div className="portfolio-footer-socials" aria-label="Redes sociais">
+        <div className="portfolio-footer-socials" aria-label={t('Redes sociais')}>
           {socialLinks.map(link => {
             const Icon = socialIconMap[link.type];
             return Icon ? (
@@ -503,7 +507,7 @@ export default function PortfolioExperience({
             ) : null;
           })}
         </div>
-        <a className="portfolio-back-to-top" href="#home">Voltar ao início <FaArrowUp aria-hidden="true" /></a>
+        <a className="portfolio-back-to-top" href="#home">{t('Voltar ao início')} <FaArrowUp aria-hidden="true" /></a>
       </footer>
 
     </main>

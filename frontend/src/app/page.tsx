@@ -7,8 +7,10 @@ import { useSocialLinks } from './social-links/hooks/useSocialLinks';
 import Loading from '@/components/Loading';
 import AlertMessage from '@/components/AlertMessage';
 import PortfolioExperience from '@/components/PortfolioExperience';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 export default function Home() {
+  const { t } = useLanguage();
   const { experiences, loading: loadingExpData, error: errorExpData } = useExperience();
   const { projects, loading: loadingProjData, error: errorProjData } = useProjects();
   const { formations, certifications, loading: loadingEduData, error: errorEduData } = useEducation();
@@ -58,7 +60,7 @@ export default function Home() {
   if (hasError) {
     return (
       <AlertMessage 
-        message="Erro ao carregar dados"
+        message={t('Erro ao carregar dados')}
         severity="error"
       />
     );
