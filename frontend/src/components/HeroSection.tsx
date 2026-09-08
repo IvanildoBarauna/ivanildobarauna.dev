@@ -43,7 +43,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-xl md:text-3xl font-semibold tracking-tight text-primary-foreground/90 max-w-xl"
               >
-                Data & Software Engineer
+                Senior Software Engineer @ Mercado Livre
               </motion.p>
               
               <motion.p
@@ -52,7 +52,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="text-base md:text-lg text-primary-foreground/65 max-w-xl leading-relaxed"
               >
-                Especialização em Engenharia, Análise de Dados e mantenedor de bibliotecas e serviços Open Source.
+                Construo sistemas na interseção entre software, dados, arquitetura e tomada de decisão.
               </motion.p>
             </div>
 
