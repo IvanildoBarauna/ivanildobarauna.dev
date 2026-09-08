@@ -157,11 +157,10 @@ export default function PortfolioExperience({
   const atlasSectionRef = useRef<HTMLElement>(null);
   const featuredSolutionRef = useRef<HTMLDivElement>(null);
   const experienceSectionRef = useRef<HTMLElement>(null);
-  const experienceTrackRef = useRef<HTMLDivElement>(null);
-  const experienceStageRef = useRef<HTMLDivElement>(null);
   const companies = Object.entries(experiences);
   const experienceSteps = companies.flatMap(([company, roles], companyIndex) => roles.map((role, roleIndex) => ({ company, roles, role, companyIndex, roleIndex })));
   const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
+  const activeExperienceIndexRef = useRef(0);
   const otherProjects = projects.slice(1);
   const certificationList = Object.values(certifications).flat();
   const activeExperience = experienceSteps[activeExperienceIndex] ?? experienceSteps[0];
@@ -215,33 +214,43 @@ export default function PortfolioExperience({
   }, []);
 
   useEffect(() => {
-    const track = experienceTrackRef.current;
-    const stage = experienceStageRef.current;
-    if (!track || !stage || experienceSteps.length < 2) return;
+    const section = experienceSectionRef.current;
+    if (!section || experienceSteps.length < 2) return;
+    if (window.matchMedia?.('(max-width: 760px), (prefers-reduced-motion: reduce)').matches) return;
 
-    let frameId = 0;
-    const updateExperienceStep = () => {
-      const bounds = track.getBoundingClientRect();
-      const stickyTop = 0;
-      // This is the same distance used by the sticky stage. The final role is
-      // reached just before the stage releases, preventing an empty scroll gap.
-      const scrollableDistance = Math.max(1, track.offsetHeight - stage.offsetHeight - stickyTop);
-      const progress = Math.min(1, Math.max(0, (stickyTop - bounds.top) / scrollableDistance));
-      const nextIndex = Math.min(experienceSteps.length - 1, Math.floor(progress * experienceSteps.length));
-      setActiveExperienceIndex(current => current === nextIndex ? current : nextIndex);
-      frameId = 0;
-    };
-    const onScroll = () => {
-      if (!frameId) frameId = window.requestAnimationFrame(updateExperienceStep);
+    let coolingDown = false;
+    let cooldownId = 0;
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) < 4) return;
+
+      const bounds = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const isInLockZone = bounds.top <= viewportHeight * 0.16 && bounds.bottom >= viewportHeight * 0.84;
+      if (!isInLockZone) return;
+
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const currentIndex = activeExperienceIndexRef.current;
+      const isLeavingForward = direction > 0 && currentIndex === experienceSteps.length - 1;
+      const isLeavingBackward = direction < 0 && currentIndex === 0;
+      if (isLeavingForward || isLeavingBackward) return;
+
+      event.preventDefault();
+      if (Math.abs(bounds.top) > 1) {
+        window.scrollTo({ top: window.scrollY + bounds.top, behavior: 'auto' });
+      }
+      if (coolingDown) return;
+
+      const nextIndex = Math.max(0, Math.min(experienceSteps.length - 1, currentIndex + direction));
+      activeExperienceIndexRef.current = nextIndex;
+      setActiveExperienceIndex(nextIndex);
+      coolingDown = true;
+      cooldownId = window.setTimeout(() => { coolingDown = false; }, 280);
     };
 
-    updateExperienceStep();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('wheel', onWheel, { passive: false });
     return () => {
-      window.cancelAnimationFrame(frameId);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      window.clearTimeout(cooldownId);
+      window.removeEventListener('wheel', onWheel);
     };
   }, [experienceSteps.length]);
 
@@ -367,8 +376,8 @@ export default function PortfolioExperience({
       </section>
 
       <section ref={experienceSectionRef} id="experience" data-testid="experience-section" className="portfolio-experience">
-        <div ref={experienceTrackRef} className="experience-scroll-track" style={{ height: `${Math.max(2, experienceSteps.length) * 100}vh` }}>
-          <div ref={experienceStageRef} className="experience-sticky-stage">
+        <div className="experience-scroll-track">
+          <div className="experience-sticky-stage">
             <div className="portfolio-heading"><p className="portfolio-eyebrow"><span /> Experiência</p></div>
             {activeExperience && <div className="experience-active-company">
               <span className="company-logo company-logo--focus">{activeExperience.role.companyLogo && <Image src={activeExperience.role.companyLogo} alt={`Logo ${activeExperience.company}`} width={56} height={56} />}</span>

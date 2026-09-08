@@ -328,8 +328,8 @@ body { background: var(--atlas-bg); }
 .portfolio-experience { border-top: 1px solid var(--atlas-line); max-width: 1240px; padding: 0 34px; margin: 0 auto; scroll-margin-top: 0; }
 .portfolio-education { border-top: 1px solid var(--atlas-line); max-width: 1240px; padding: 82px 34px; margin: 0 auto; display: grid; grid-template-columns: .8fr 1.4fr; gap: 100px; scroll-margin-top: 100px; }
 .portfolio-experience .portfolio-heading h2, .portfolio-education .portfolio-heading h2 { font-size: clamp(34px, 3.5vw, 48px); line-height: 1.08; }
-.experience-scroll-track { position: relative; }
-.experience-sticky-stage { position: sticky; top: 0; height: 100vh; height: 100svh; box-sizing: border-box; display: grid; grid-template-rows: auto auto 340px 128px auto; align-content: center; justify-items: center; padding: 96px 0 28px; overflow: hidden; }
+.experience-scroll-track { position: relative; height: 100vh; height: 100svh; }
+.experience-sticky-stage { position: sticky; top: 0; height: 100vh; height: 100svh; box-sizing: border-box; display: grid; grid-template-rows: auto auto min(340px, 42vh) min(128px, 14vh) auto; align-content: start; justify-items: center; padding: 96px 0 20px; overflow: hidden; }
 .experience-sticky-stage > .portfolio-heading { width: 100%; margin: 0 0 18px; align-self: end; }
 .experience-active-company { width: min(100%, 720px); display: flex; align-items: center; gap: 18px; padding: 0 0 20px; border-bottom: 1px solid var(--atlas-line); }
 .company-logo { width: 30px; height: 30px; flex: 0 0 30px; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--atlas-line); border-radius: 8px; background: #fff; }
@@ -337,16 +337,16 @@ body { background: var(--atlas-bg); }
 .company-logo--focus { width: 56px; height: 56px; flex-basis: 56px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,.07); }
 .experience-active-company p, .experience-active-company span { margin: 0; color: var(--atlas-muted); font-size: 12px; line-height: 1.45; }
 .experience-active-company h3 { margin: 2px 0; color: var(--atlas-text); font-size: 28px; letter-spacing: -.04em; font-weight: 570; }
-.experience-role-deck { position: relative; width: min(100%, 720px); height: 340px; }
-.experience-role-card { position: absolute; inset: 30px 0 0; padding: 34px 38px; overflow: hidden; border: 1px solid var(--atlas-line); border-radius: 24px; background: var(--atlas-surface-raised); box-shadow: 0 25px 60px rgba(0,0,0,.08); opacity: 0; transform: translateY(80px) scale(.96); pointer-events: none; transition: transform .45s cubic-bezier(.22,1,.36,1), opacity .32s ease; }
+.experience-role-deck { position: relative; width: min(100%, 720px); height: min(340px, 42vh); }
+.experience-role-card { position: absolute; inset: 30px 0 0; display: flex; flex-direction: column; padding: 34px 38px; overflow: hidden; border: 1px solid var(--atlas-line); border-radius: 24px; background: var(--atlas-surface-raised); box-shadow: 0 25px 60px rgba(0,0,0,.08); opacity: 0; transform: translateY(80px) scale(.96); pointer-events: none; transition: transform .45s cubic-bezier(.22,1,.36,1), opacity .32s ease; }
 .experience-role-card.is-active { z-index: 3; opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
 .experience-role-card.is-past { z-index: 1; opacity: .35; transform: translateY(-22px) scale(.98); }
 .experience-role-card.is-future { z-index: 2; }
 .experience-role-count { color: var(--atlas-blue); font-size: 10px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
 .experience-role-card h3 { max-width: 640px; margin: 15px 0 14px; color: var(--atlas-text); font-size: clamp(28px, 3.2vw, 43px); letter-spacing: -.05em; line-height: 1; font-weight: 560; }
 .experience-role-card p { max-width: 650px; margin: 0; color: var(--atlas-muted); font-size: 16px; line-height: 1.65; }
-.experience-role-card small { position: absolute; right: 36px; bottom: 28px; left: 36px; overflow: hidden; color: var(--atlas-blue); font-size: 12px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
-.experience-company-stack { position: relative; width: min(100%, 600px); height: 128px; }
+.experience-role-card small { margin-top: auto; padding-top: 12px; overflow: hidden; color: var(--atlas-blue); font-size: 12px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+.experience-company-stack { position: relative; width: min(100%, 600px); height: min(128px, 14vh); }
 .experience-company-preview { position: absolute; top: calc(var(--stack-index) * 18px); left: calc(var(--stack-index) * 34px); right: calc((2 - var(--stack-index)) * 34px); min-height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 1px solid var(--atlas-line); border-radius: 14px; color: var(--atlas-muted); background: rgba(255,255,255,.86); box-shadow: 0 10px 20px rgba(0,0,0,.04); transition: transform .35s cubic-bezier(.22,1,.36,1), color .25s, border-color .25s, box-shadow .25s; }
 .experience-company-preview strong { font-size: 13px; font-weight: 560; }
 .experience-company-preview.is-active { z-index: 4; color: var(--atlas-text); border-color: rgba(0,113,227,.42); box-shadow: 0 14px 30px rgba(0,113,227,.12); transform: translateY(-8px); }
@@ -439,7 +439,7 @@ body { background: var(--atlas-bg); }
   .experience-role-card.is-past, .experience-role-card.is-future { opacity: 1; transform: none; }
   .experience-role-card h3 { font-size: 28px; }
   .experience-role-card p { font-size: 14px; }
-  .experience-role-card small { right: 22px; bottom: 21px; left: 22px; }
+  .experience-role-card small { margin-top: 18px; padding-top: 0; }
   .experience-company-stack { width: 100%; height: 112px; }
   .experience-company-preview { right: 0; left: 0; }
   .experience-scroll-hint { display: none; }
