@@ -13,11 +13,11 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "autoprefixer": "^10.4.18",
-    "form-data": "^4.0.4",
+    "form-data": "^4.0.6",
     "framer-motion": "^12.6.3",
-    "next": "^16.2.6",
+    "next": "^16.2.11",
     "next-sitemap": "^4.2.3",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.23",
     "react": "^19.2.1",
     "react-country-flag": "^3.1.0",
     "react-dom": "^19.2.1",
@@ -25,7 +25,7 @@
     "tailwindcss": "^3.4.1"
   },
   "overrides": {
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.23"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
@@ -34,13 +34,13 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^4.4.1",
-    "axios": "^1.15.2",
+    "axios": "^1.18.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.3.8",
     "jsdom": "^26.1.0",
-    "serve": "^14.2.4",
+    "serve": "^14.2.5",
     "typescript": "5.8.3",
-    "vitest": "^3.1.2",
+    "vitest": "^3.2.6",
     "wrangler": "^4.129.0"
   }
 }
