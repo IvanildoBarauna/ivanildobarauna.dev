@@ -11,24 +11,14 @@ import Loading from '@/components/Loading';
 import AlertMessage from '@/components/AlertMessage';
 import PortfolioExperience from '@/components/PortfolioExperience';
 
-const parseNumber = (value: string | number): number => {
-  if (typeof value === 'string') {
-    const cleanValue = value.replace(/\+$/, '');
-    const num = Number(cleanValue);
-    return isNaN(num) ? 0 : num;
-  }
-  const num = Number(value);
-  return isNaN(num) ? 0 : num;
-};
-
 export default function Home() {
   // Hooks para dados totais (usados no Hero e About)
-  const { totalExperience, loading: loadingExperience, error: errorExperience } = useTotalExperience();
-  const { totalProjects, loading: loadingProjects, error: errorProjects } = useTotalProjects();
-  const { totalEducation, loading: loadingEducation, error: errorEducation } = useTotalEducation();
+  const { loading: loadingExperience, error: errorExperience } = useTotalExperience();
+  const { loading: loadingProjects, error: errorProjects } = useTotalProjects();
+  const { loading: loadingEducation, error: errorEducation } = useTotalEducation();
   
   // Hooks para dados completos (usados nas seções)
-  const { experiences, loading: loadingExpData, error: errorExpData, tempoTotalCarreira } = useExperience();
+  const { experiences, loading: loadingExpData, error: errorExpData } = useExperience();
   const { projects, loading: loadingProjData, error: errorProjData } = useProjects();
   const { formations, certifications, loading: loadingEduData, error: errorEduData } = useEducation();
   const { socialLinks, loading: loadingSocialLinks, error: errorSocialLinks } = useSocialLinks();
@@ -66,11 +56,7 @@ export default function Home() {
   }
 
   return <PortfolioExperience
-    totalExperience={parseNumber(totalExperience)}
-    totalProjects={parseNumber(totalProjects)}
-    totalEducation={parseNumber(totalEducation)}
     experiences={experiences}
-    tempoTotalCarreira={tempoTotalCarreira}
     projects={projects}
     formations={formations}
     certifications={certifications}

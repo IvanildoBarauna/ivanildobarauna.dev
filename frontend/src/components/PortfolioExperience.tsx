@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import {
   FaArrowUp,
@@ -10,6 +11,7 @@ import {
   FaCogs,
   FaDatabase,
   FaExternalLinkAlt,
+  FaGithub,
   FaMapMarkerAlt,
   FaRocket,
   FaWarehouse,
@@ -23,11 +25,7 @@ import { socialIconMap } from '@/utils/socialIconMap';
 import CvDownloadButton from '@/components/CvDownloadButton';
 
 type Props = {
-  totalExperience: number;
-  totalProjects: number;
-  totalEducation: number;
   experiences: Record<string, Experience[]>;
-  tempoTotalCarreira: string;
   projects: Project[];
   formations: Formation[];
   certifications: Record<string, Certification[]>;
@@ -37,12 +35,86 @@ type Props = {
 const compactTitle = (title: string) => title.split('/').pop() ?? title;
 const descriptionText = (description: string | string[]) =>
   Array.isArray(description) ? description.join(' ') : description;
-const roundedExperienceYears = (duration: string, fallback: number) => {
-  const years = Number(duration.match(/(\d+)\s+ano/)?.[1] ?? fallback);
-  const months = Number(duration.match(/(\d+)\s+mes/)?.[1] ?? 0);
-  return `${Math.round(years + months / 12)} anos`;
-};
 
+type CodeSegment = { text: string; className?: string };
+
+function TypingSnippet({ segments, className = 'project-code', label }: { segments: CodeSegment[]; className?: string; label: string }) {
+  const containerRef = useRef<HTMLPreElement>(null);
+  const startedRef = useRef(false);
+  const totalLength = segments.reduce((total, segment) => total + segment.text.length, 0);
+  const [visibleLength, setVisibleLength] = useState(0);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      setVisibleLength(totalLength);
+      return;
+    }
+
+    const startTyping = () => {
+      if (startedRef.current) return;
+      startedRef.current = true;
+      const timer = window.setInterval(() => {
+        setVisibleLength(current => {
+          const next = Math.min(totalLength, current + 8);
+          if (next === totalLength) window.clearInterval(timer);
+          return next;
+        });
+      }, 25);
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        startTyping();
+        observer.disconnect();
+      }
+    }, { threshold: 0.2 });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [totalLength]);
+
+  let charactersLeft = visibleLength;
+  return (
+    <pre ref={containerRef} className={className} aria-label={label}><code>{segments.map((segment, index) => {
+      const visibleText = segment.text.slice(0, Math.max(0, Math.min(segment.text.length, charactersLeft)));
+      charactersLeft -= visibleText.length;
+      return visibleText ? <span key={index} className={segment.className}>{visibleText}</span> : null;
+    })}<span className="typing-cursor" aria-hidden="true" /></code></pre>
+  );
+}
+
+function ProjectCodeExample({ projectName }: { projectName: string }) {
+  if (projectName === 'api-to-dataframe') {
+    return (
+      <TypingSnippet label="Exemplo de uso em Python" segments={[
+        { text: 'from', className: 'code-keyword' }, { text: ' api_to_dataframe ' }, { text: 'import', className: 'code-keyword' }, { text: ' ClientBuilder\n\n' },
+        { text: 'client = ' }, { text: 'ClientBuilder', className: 'code-function' }, { text: '(\n' },
+        { text: '  endpoint=' }, { text: '"https://api.example.com/items"', className: 'code-string' }, { text: '\n' },
+        { text: ')\n' },
+        { text: 'data = client.' }, { text: 'get_api_data', className: 'code-function' }, { text: '()\n' },
+        { text: 'df = client.' }, { text: 'api_to_dataframe', className: 'code-function' }, { text: '(data)' },
+      ]} />
+    );
+  }
+
+  return (
+    <>
+      <TypingSnippet label="Exemplo de uso em Python" segments={[
+        { text: 'from', className: 'code-keyword' }, { text: ' currency_quote ' }, { text: 'import', className: 'code-keyword' }, { text: ' ClientBuilder\n\n' },
+        { text: 'client = ' }, { text: 'ClientBuilder', className: 'code-function' }, { text: '([\n' },
+        { text: '  "USD-BRL", "EUR-BRL"', className: 'code-string' }, { text: '\n])\n' },
+        { text: 'quotes = client.' }, { text: 'get_last_quote', className: 'code-function' }, { text: '()\n' },
+        { text: 'print', className: 'code-function' }, { text: '(quotes)\n\n' },
+        { text: '# Get historical quote for a specific date (YYYYMMDD)\n', className: 'code-comment' },
+        { text: 'print', className: 'code-function' }, { text: '(client.' }, { text: 'get_history_quote', className: 'code-function' }, { text: '(reference_date=' }, { text: '20220101', className: 'code-number' }, { text: '))' },
+      ]} />
+      <div className="project-response-example">
+        <span>Response example</span>
+        <pre className="project-response-code" aria-label="Exemplo de resposta JSON"><code>[{`\n`}  {'{'}{`\n`}    <span className="code-property">&quot;currency_pair&quot;</span>: <span className="code-string">&quot;USD-BRL&quot;</span>,{`\n`}    <span className="code-property">&quot;currency_pair_name&quot;</span>: <span className="code-string">&quot;Dólar Americano/Real Brasileiro&quot;</span>,{`\n`}    <span className="code-property">&quot;base_currency_code&quot;</span>: <span className="code-string">&quot;USD&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_currency_code&quot;</span>: <span className="code-string">&quot;BRL&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_timestamp&quot;</span>: <span className="code-number">1727201744</span>,{`\n`}    <span className="code-property">&quot;bid_price&quot;</span>: <span className="code-string">&quot;5.4579&quot;</span>,{`\n`}    <span className="code-property">&quot;ask_price&quot;</span>: <span className="code-string">&quot;5.4589&quot;</span>,{`\n`}    <span className="code-property">&quot;quote_extracted_at&quot;</span>: <span className="code-number">1727201753</span>{`\n`}  {'}'}{`\n`}]</code></pre>
+      </div>
+    </>
+  );
+}
 const dataSkills = [
   { icon: FaCloudUploadAlt, title: 'Ingestão de dados', detail: 'Conectar diferentes fontes' },
   { icon: FaCogs, title: 'Processamento', detail: 'Transformar dados em informação' },
@@ -76,19 +148,102 @@ function SkillNode({
 }
 
 export default function PortfolioExperience({
-  totalExperience,
-  totalProjects,
-  totalEducation,
   experiences,
-  tempoTotalCarreira,
   projects,
   formations,
   certifications,
   socialLinks,
 }: Props) {
+  const atlasSectionRef = useRef<HTMLElement>(null);
+  const featuredSolutionRef = useRef<HTMLDivElement>(null);
+  const experienceSectionRef = useRef<HTMLElement>(null);
+  const experienceTrackRef = useRef<HTMLDivElement>(null);
+  const experienceStageRef = useRef<HTMLDivElement>(null);
   const companies = Object.entries(experiences);
+  const experienceSteps = companies.flatMap(([company, roles], companyIndex) => roles.map((role, roleIndex) => ({ company, roles, role, companyIndex, roleIndex })));
+  const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
   const otherProjects = projects.slice(1);
   const certificationList = Object.values(certifications).flat();
+  const activeExperience = experienceSteps[activeExperienceIndex] ?? experienceSteps[0];
+
+  useEffect(() => {
+    const section = atlasSectionRef.current;
+    const solution = featuredSolutionRef.current;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!section || !solution) return;
+
+    if (reducedMotion) {
+      section.style.setProperty('--atlas-progress', '1');
+      solution.style.setProperty('--solution-progress', '1');
+      section.dataset.atlasComplete = 'true';
+      solution.dataset.solutionComplete = 'true';
+      return;
+    }
+
+    let frameId = 0;
+    const updateAtlasProgress = () => {
+      const bounds = section.getBoundingClientRect();
+      // The assembly follows the scroll and concludes when the atlas settles
+      // into the centre of the viewport, rather than before it is in focus.
+      const progress = Math.min(1, Math.max(0, (window.innerHeight * 0.72 - bounds.top) / (window.innerHeight * 0.72)));
+      section.style.setProperty('--atlas-progress', progress.toFixed(3));
+
+      if (progress >= 0.9) section.dataset.atlasComplete = 'true';
+
+      const solutionBounds = solution.getBoundingClientRect();
+      const solutionCompletionTop = (window.innerHeight - solutionBounds.height) / 2;
+      const solutionStartTop = window.innerHeight * 0.78;
+      const solutionProgress = Math.min(1, Math.max(0,
+        (solutionStartTop - solutionBounds.top) / (solutionStartTop - solutionCompletionTop),
+      ));
+      solution.style.setProperty('--solution-progress', solutionProgress.toFixed(3));
+      if (solutionProgress >= 0.9) solution.dataset.solutionComplete = 'true';
+      frameId = 0;
+    };
+    const onScroll = () => {
+      if (!frameId) frameId = window.requestAnimationFrame(updateAtlasProgress);
+    };
+
+    updateAtlasProgress();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const track = experienceTrackRef.current;
+    const stage = experienceStageRef.current;
+    if (!track || !stage || experienceSteps.length < 2) return;
+
+    let frameId = 0;
+    const updateExperienceStep = () => {
+      const bounds = track.getBoundingClientRect();
+      const stickyTop = 0;
+      // This is the same distance used by the sticky stage. The final role is
+      // reached just before the stage releases, preventing an empty scroll gap.
+      const scrollableDistance = Math.max(1, track.offsetHeight - stage.offsetHeight - stickyTop);
+      const progress = Math.min(1, Math.max(0, (stickyTop - bounds.top) / scrollableDistance));
+      const nextIndex = Math.min(experienceSteps.length - 1, Math.floor(progress * experienceSteps.length));
+      setActiveExperienceIndex(current => current === nextIndex ? current : nextIndex);
+      frameId = 0;
+    };
+    const onScroll = () => {
+      if (!frameId) frameId = window.requestAnimationFrame(updateExperienceStep);
+    };
+
+    updateExperienceStep();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [experienceSteps.length]);
 
   return (
     <main className="portfolio-shell">
@@ -109,22 +264,21 @@ export default function PortfolioExperience({
           </div>
           <CvDownloadButton variant="portfolio" />
           <div className="portfolio-stats portfolio-hero-stats" aria-label="Resumo profissional">
-            <span><strong>{roundedExperienceYears(tempoTotalCarreira, totalExperience)}</strong> de experiência</span>
-            <span><strong>{totalProjects}</strong> projetos públicos</span>
-            <span><strong>{totalEducation}</strong> formações e certificações</span>
+            <span><strong>+14 anos</strong> de experiência profissional na área de tecnologia</span>
           </div>
           <p className="portfolio-proof" aria-label="Áreas de especialidade">
             <span><strong>Analytics</strong><i /></span>
             <span><strong>Software Engineering</strong><i /></span>
             <span><strong>Data Pipelines</strong></span>
           </p>
+          <a className="portfolio-scroll-cue" href="#about"><span>Explore a solução</span><i aria-hidden="true">↓</i></a>
         </div>
         <div className="portfolio-portrait">
           <Image src="/images/profile/profile-professional-casual.png" alt="Ivanildo Barauna com camiseta cinza e braços cruzados" fill priority sizes="(max-width: 760px) 100vw, 52vw" />
         </div>
       </section>
 
-      <section id="about" data-testid="about-section" className="portfolio-atlas-section">
+      <section ref={atlasSectionRef} id="about" data-testid="about-section" className="portfolio-atlas-section">
         <div className="portfolio-heading portfolio-heading--center">
           <div className="portfolio-heading-copy">
             <h2>Resolução de problemas de ponta a ponta</h2>
@@ -155,7 +309,7 @@ export default function PortfolioExperience({
       </section>
 
       <section id="projects" data-testid="projects-section" className="portfolio-projects">
-        <div className="portfolio-featured">
+        <div ref={featuredSolutionRef} className="portfolio-featured">
           <div className="portfolio-featured-copy">
             <p className="portfolio-eyebrow"><span /> Solução em destaque</p>
             <h2>Real-time Event<br />Processing Pipeline</h2>
@@ -166,8 +320,8 @@ export default function PortfolioExperience({
               <li>Dados disponíveis para analytics</li>
             </ul>
             <div className="portfolio-repo-links" aria-label="Repositórios da solução">
-              <a className="portfolio-outline" href="https://github.com/IvanildoBarauna/data-producer-api" target="_blank" rel="noreferrer">Producer API <FaExternalLinkAlt /></a>
-              <a className="portfolio-outline" href="https://github.com/IvanildoBarauna/data-pipeline-async-ingest" target="_blank" rel="noreferrer">Async Pipeline <FaExternalLinkAlt /></a>
+                <a className="portfolio-outline" href="https://github.com/IvanildoBarauna/data-producer-api" target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> Producer API <FaExternalLinkAlt aria-hidden="true" /></a>
+                <a className="portfolio-outline" href="https://github.com/IvanildoBarauna/data-pipeline-async-ingest" target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> Async Pipeline <FaExternalLinkAlt aria-hidden="true" /></a>
             </div>
           </div>
           <div className="pipeline-panel" aria-label="Fluxo da solução de processamento de eventos em tempo real">
@@ -179,12 +333,12 @@ export default function PortfolioExperience({
                 <div className="producer-pubsub-port"><FaRocket /><span>Pub/Sub</span></div>
                 <div className="producer-event-label">Events Producer</div>
               </div>
-              <span className="pipeline-connector" aria-hidden="true"><small>publica eventos</small>→</span>
+              <span className="pipeline-connector pipeline-connector--events" aria-hidden="true"><small>publica eventos</small><span className="pipeline-event-line"><i /><i /><i /></span><b>→</b></span>
               <div className="pipeline-stage">
                 <div className="pipeline-box pipeline-box--active"><FaCloud /><strong>Reactive<br />Pipeline</strong><small>Consome eventos</small><em>Apache Beam · Dataflow</em></div>
                 <div className="pipeline-stage-label">Ingest &amp; Process Events</div>
               </div>
-              <span className="pipeline-connector" aria-hidden="true"><small>persiste</small>→</span>
+              <span className="pipeline-connector pipeline-connector--events" aria-hidden="true"><small>persiste</small><span className="pipeline-event-line"><i /><i /><i /></span><b>→</b></span>
               <div className="pipeline-stage">
                 <div className="pipeline-box"><SiGooglebigquery /><strong>BigQuery</strong><small>Data warehouse</small><em>Pronto para analytics</em></div>
                 <div className="pipeline-stage-label pipeline-stage-label--storage">Store Processed Events</div>
@@ -196,32 +350,50 @@ export default function PortfolioExperience({
         <div className="portfolio-project-list">
           <p className="portfolio-eyebrow"><span /> Outros projetos</p>
           {otherProjects.map(project => (
-            <a key={project.id} href={project.projectUrl} target="_blank" rel="noreferrer" className="portfolio-project-row">
-              <span className="project-row-icon"><FaCode /></span>
-              <span><strong>{compactTitle(project.title)}</strong><small>{project.description}</small></span>
-              <em>Ver no GitHub <FaExternalLinkAlt /></em>
-            </a>
+            <article key={project.id} className="portfolio-project-showcase">
+              <div className="portfolio-project-copy">
+                <p>Biblioteca Python</p>
+                <h3>{compactTitle(project.title)}</h3>
+                <p>{project.description}</p>
+                <a href={project.projectUrl} target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> Ver no GitHub <FaExternalLinkAlt aria-hidden="true" /></a>
+              </div>
+              <div className="project-code-window">
+                <div className="project-code-window-bar"><span /><span /><span /><em>Python</em></div>
+                <ProjectCodeExample projectName={compactTitle(project.title)} />
+              </div>
+            </article>
           ))}
         </div>
       </section>
 
-      <section id="experience" data-testid="experience-section" className="portfolio-experience">
-        <div className="portfolio-heading"><p className="portfolio-eyebrow"><span /> Experiência</p></div>
-        <div className="portfolio-experience-list">
-          {companies.map(([company, roles]) => (
-            <article key={company}>
-              <div className="experience-timeline-marker" aria-hidden="true"><span /></div>
-              <div className="company-meta">
-                <div className="company-identity">
-                  {roles[0]?.companyLogo && <span className="company-logo"><Image src={roles[0].companyLogo} alt={`Logo ${company}`} width={30} height={30} /></span>}
-                  <h3>{company.replace(' Administradora de Consórcio Ltda', '')}</h3>
+      <section ref={experienceSectionRef} id="experience" data-testid="experience-section" className="portfolio-experience">
+        <div ref={experienceTrackRef} className="experience-scroll-track" style={{ height: `${Math.max(2, experienceSteps.length) * 100}vh` }}>
+          <div ref={experienceStageRef} className="experience-sticky-stage">
+            <div className="portfolio-heading"><p className="portfolio-eyebrow"><span /> Experiência</p></div>
+            {activeExperience && <div className="experience-active-company">
+              <span className="company-logo company-logo--focus">{activeExperience.role.companyLogo && <Image src={activeExperience.role.companyLogo} alt={`Logo ${activeExperience.company}`} width={56} height={56} />}</span>
+              <div><p>{activeExperience.role.period}</p><h3>{activeExperience.company.replace(' Administradora de Consórcio Ltda', '')}</h3><span>{activeExperience.role.location}</span></div>
+            </div>}
+            <div className="experience-role-deck" aria-live="polite">
+              {experienceSteps.map((step, index) => (
+                <article key={step.role.id} className={`experience-role-card ${index === activeExperienceIndex ? 'is-active' : index < activeExperienceIndex ? 'is-past' : 'is-future'}`}>
+                  <span className="experience-role-count">{step.roles.length > 1 ? `${step.roleIndex + 1} de ${step.roles.length} cargos na empresa` : 'Experiência profissional'}</span>
+                  <h3>{step.role.position}</h3>
+                  <p>{descriptionText(step.role.description)}</p>
+                  <small>{step.role.skills?.split(';').slice(0, 5).join(' · ')}</small>
+                </article>
+                ))}
+            </div>
+            <div className="experience-company-stack" aria-label="Empresas da trajetória profissional">
+              {companies.map(([company, roles], index) => (
+                <div key={company} className={`experience-company-preview ${index === activeExperience?.companyIndex ? 'is-active' : ''}`} style={{ '--stack-index': index } as CSSProperties}>
+                  <span className="company-logo">{roles[0]?.companyLogo && <Image src={roles[0].companyLogo} alt="" width={30} height={30} />}</span>
+                  <strong>{company.replace(' Administradora de Consórcio Ltda', '')}</strong>
                 </div>
-                <span>{roles[0]?.period}</span>
-                <p>{roles[0]?.location}</p>
-              </div>
-              <div className="role-list">{roles.map(role => <div key={role.id}><strong>{role.position}</strong><p>{descriptionText(role.description)}</p><small>{role.skills?.split(';').slice(0, 5).join(' · ')}</small></div>)}</div>
-            </article>
-          ))}
+              ))}
+            </div>
+            <p className="experience-scroll-hint"><span /> Continue rolando para navegar pela trajetória</p>
+          </div>
         </div>
       </section>
 

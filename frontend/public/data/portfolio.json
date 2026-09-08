@@ -98,16 +98,6 @@
         "active": true,
         "created_at": "2025-05-30 21:12:46.479164",
         "updated_at": null
-      },
-      {
-        "id": 10,
-        "name": "Amazon AWS - EC2/S3",
-        "institution": "Udemy",
-        "credential_url": "https://www.udemy.com/certificate/UC-85c95c88-83d3-420b-a66e-c820a4ca6b6f/",
-        "logo": "/images/certificacoes/udemy.png",
-        "active": true,
-        "created_at": "2025-05-30 21:12:46.479164",
-        "updated_at": null
       }
     ]
   },
@@ -383,16 +373,6 @@
           "institution": "Google Cloud Training Online",
           "credential_url": "https://www.cloudskillsboost.google/public_profiles/107aa737-d207-4a7e-a36d-5c4b7571f26b/badges/2516636",
           "logo": "/images/certificacoes/google-cloud-training.png",
-          "active": true,
-          "created_at": "2025-05-30 21:12:46.479164",
-          "updated_at": null
-        },
-        {
-          "id": 10,
-          "name": "Amazon AWS - EC2/S3",
-          "institution": "Udemy",
-          "credential_url": "https://www.udemy.com/certificate/UC-85c95c88-83d3-420b-a66e-c820a4ca6b6f/",
-          "logo": "/images/certificacoes/udemy.png",
           "active": true,
           "created_at": "2025-05-30 21:12:46.479164",
           "updated_at": null
