@@ -473,7 +473,7 @@ body { background: var(--atlas-bg); }
   .experience-role-card.is-past, .experience-role-card.is-future { opacity: 1; transform: none; }
   .experience-role-card h3 { font-size: 28px; }
   .experience-role-card p { font-size: 14px; }
-  .experience-role-card small { margin-top: 18px; padding-top: 0; }
+  .experience-role-skills { margin-top: 18px; padding-top: 0; }
   .experience-company-stack { width: 100%; height: 112px; }
   .experience-company-preview { right: 0; left: 0; }
   .experience-scroll-hint { display: none; }
