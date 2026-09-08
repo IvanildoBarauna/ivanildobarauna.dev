@@ -31,12 +31,7 @@ main { overflow: hidden; }
 .site-header nav a:hover, .site-header nav a:focus-visible { color: white; }
 .site-header nav a:first-child { color: var(--blue); }
 .site-header nav a:first-child::after { content: ""; position: absolute; height: 1px; background: var(--blue); left: 0; right: 0; bottom: -18px; }
-.header-actions { justify-self: end; display: flex; align-items: center; gap: 14px; }
-.theme-icon { width: 17px; height: 17px; color: #a5a5aa; }
-.language-selector { display: flex; padding: 3px; border: 1px solid var(--line); border-radius: 8px; }
-.language-selector button { border: 0; border-radius: 5px; padding: 5px 7px; color: #8f8f94; background: transparent; cursor: pointer; font: inherit; font-size: 10px; font-weight: 600; }
-.language-selector button:hover, .language-selector button:focus-visible { color: white; }
-.language-selector button.active { color: white; background: var(--blue); }
+.theme-icon { justify-self: end; width: 17px; height: 17px; color: #a5a5aa; }
 
 .hero {
   min-height: 650px; max-width: 1240px; margin: 0 auto; padding: 104px 34px 0;

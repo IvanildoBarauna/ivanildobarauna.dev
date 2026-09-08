@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { supportedLanguages, useLanguage } from '@/i18n/LanguageProvider';
 
 const items = [
   { id: 'home', label: 'Sobre mim', sections: ['home', 'about'] },
@@ -10,6 +11,7 @@ const items = [
 ];
 
 export default function Navigation() {
+  const { language, setLanguage, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState('home');
 
@@ -50,11 +52,14 @@ export default function Navigation() {
 
   return (
     <header className="atlas-nav">
-      <a className="atlas-brand" href="#home" aria-label="Ivanildo Barauna — início"><span />IB</a>
-      <nav className={open ? 'is-open' : ''} aria-label="Navegação principal">
-        {items.map(item => <a key={item.id} href={`#${item.id}`} className={active === item.id ? 'active' : ''} aria-current={active === item.id ? 'page' : undefined} onClick={() => { setActive(item.id); setOpen(false); }}>{item.label}</a>)}
+      <a className="atlas-brand" href="#home" aria-label={`Ivanildo Barauna — ${t('Voltar ao início')}`}><span />IB</a>
+      <nav className={open ? 'is-open' : ''} aria-label={t('Navegação principal')}>
+        {items.map(item => <a key={item.id} href={`#${item.id}`} className={active === item.id ? 'active' : ''} aria-current={active === item.id ? 'page' : undefined} onClick={() => { setActive(item.id); setOpen(false); }}>{t(item.label)}</a>)}
       </nav>
-      <button className="atlas-menu" onClick={() => setOpen(value => !value)} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open}>
+      <div className="atlas-language" role="group" aria-label={t('Selecionar idioma')}>
+        {supportedLanguages.map(code => <button type="button" key={code} className={language === code ? 'active' : ''} aria-pressed={language === code} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>)}
+      </div>
+      <button className="atlas-menu" onClick={() => setOpen(value => !value)} aria-label={t(open ? 'Fechar menu' : 'Abrir menu')} aria-expanded={open}>
         {open ? <FaTimes /> : <FaBars />}
       </button>
     </header>
