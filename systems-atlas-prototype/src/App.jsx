@@ -12,34 +12,23 @@ import {
   HiSignal,
 } from "react-icons/hi2";
 import { SiFastapi, SiGooglebigquery, SiPython } from "react-icons/si";
+import { useEffect, useState } from "react";
+import { buildLanguageUrl, getLanguageFromUrl, supportedLanguages, translations } from "./i18n.js";
 
-const dataSkills = [
-  { icon: SiPython, title: "Python", detail: "Linguagem" },
-  { icon: SiGooglebigquery, title: "SQL / BigQuery", detail: "Consultas" },
-  { icon: HiCubeTransparent, title: "Apache Beam / Dataflow", detail: "Processamento" },
-];
-
-const softwareSkills = [
-  { icon: SiFastapi, title: "APIs / FastAPI", detail: "Interface" },
-  { icon: HiCubeTransparent, title: "Microsserviços", detail: "Arquitetura" },
-  { icon: HiSignal, title: "Observabilidade", detail: "Visibilidade" },
-];
-
-const projects = [
+const projectDetails = [
   {
     title: "api-to-dataframe",
-    description: "Converte respostas de APIs REST em DataFrames estruturados, com retry, validação de schema e inferência de tipos.",
     href: "https://github.com/ivanildobarauna-dev/api-to-dataframe",
     icon: HiCodeBracket,
   },
   {
     title: "currency-quote",
-    description: "Solução em Python para extrair cotações com validação, testes, configuração flexível e arquitetura hexagonal.",
     href: "https://github.com/ivanildobarauna-dev/currency-quote",
     icon: HiPresentationChartLine,
   },
 ];
 
+/** Renders a skill and its icon in the systems map. */
 function SkillNode({ item, side }) {
   const Icon = item.icon;
   return (
@@ -54,6 +43,7 @@ function SkillNode({ item, side }) {
   );
 }
 
+/** Renders one outcome in the solution process. */
 function Outcome({ icon: Icon, title, children }) {
   return (
     <div className="outcome">
@@ -64,51 +54,87 @@ function Outcome({ icon: Icon, title, children }) {
   );
 }
 
+/** Renders the portfolio with URL-driven localization. */
 export function App() {
+  const [language, setLanguage] = useState(() => getLanguageFromUrl(window.location.href));
+  const copy = translations[language];
+  const dataSkills = [
+    { icon: SiPython, title: "Python", detail: copy.skillDetails[0] },
+    { icon: SiGooglebigquery, title: "SQL / BigQuery", detail: copy.skillDetails[1] },
+    { icon: HiCubeTransparent, title: "Apache Beam / Dataflow", detail: copy.skillDetails[2] },
+  ];
+  const softwareSkills = [
+    { icon: SiFastapi, title: copy.softwareSkills[0], detail: copy.skillDetails[3] },
+    { icon: HiCubeTransparent, title: copy.softwareSkills[1], detail: copy.skillDetails[4] },
+    { icon: HiSignal, title: copy.softwareSkills[2], detail: copy.skillDetails[5] },
+  ];
+
+  useEffect(() => {
+    document.documentElement.lang = language === "pt" ? "pt-BR" : language;
+    document.querySelector('meta[name="description"]').content = copy.metaDescription;
+    if (new URL(window.location.href).searchParams.get("lang") !== language) {
+      window.history.replaceState({}, "", buildLanguageUrl(window.location.href, language));
+    }
+  }, [copy, language]);
+
+  useEffect(() => {
+    /** Synchronizes the selected language when browser history changes. */
+    const handlePopState = () => setLanguage(getLanguageFromUrl(window.location.href));
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  /** Updates both application state and the language URL parameter. */
+  const changeLanguage = (nextLanguage) => {
+    window.history.pushState({}, "", buildLanguageUrl(window.location.href, nextLanguage));
+    setLanguage(nextLanguage);
+  };
+
   return (
     <main>
       <header className="site-header">
-        <a className="brand" href="#inicio" aria-label="Voltar ao início"><span />IB</a>
-        <nav aria-label="Navegação principal">
-          <a href="#inicio">Início</a>
-          <a href="#projetos">Projetos</a>
-          <a href="#experiencia">Experiência</a>
-          <a href="#atlas">Sobre</a>
-          <a href="#contato">Contato</a>
+        <a className="brand" href="#inicio" aria-label={copy.brandLabel}><span />IB</a>
+        <nav aria-label={copy.navigationLabel}>
+          {["inicio", "projetos", "experiencia", "atlas", "contato"].map((anchor, index) => <a href={`#${anchor}`} key={anchor}>{copy.navigation[index]}</a>)}
         </nav>
-        <HiOutlineSun className="theme-icon" aria-label="Tema escuro" />
+        <div className="header-actions">
+          <div className="language-selector" role="group" aria-label={copy.languageSelector}>
+            {supportedLanguages.map((code) => <button type="button" className={code === language ? "active" : ""} aria-pressed={code === language} onClick={() => changeLanguage(code)} key={code}>{code.toUpperCase()}</button>)}
+          </div>
+          <HiOutlineSun className="theme-icon" aria-label={copy.themeLabel} />
+        </div>
       </header>
 
       <section className="hero" id="inicio">
         <div className="hero-copy">
-          <p className="eyebrow"><span /> Data &amp; Software Engineer</p>
+          <p className="eyebrow"><span /> {copy.heroRole}</p>
           <h1>Ivanildo<br />Barauna</h1>
-          <p className="hero-statement">Da origem do dado ao software<br />que entrega valor.</p>
-          <a className="primary-cta" href="mailto:contato@ivanildobarauna.dev">Vamos conversar <HiArrowRight /></a>
-          <p className="credibility">Experiência em<br /><strong>Mercado Livre</strong><i />C6 Bank<i />Embracon</p>
+          <p className="hero-statement">{copy.heroStatement}</p>
+          <a className="primary-cta" href="mailto:contato@ivanildobarauna.dev">{copy.talk} <HiArrowRight /></a>
+          <p className="credibility">{copy.credibility}<br /><strong>Mercado Livre</strong><i />C6 Bank<i />Embracon</p>
         </div>
         <div className="portrait-wrap">
-          <img src="/assets/ivanildo-profile.png" alt="Retrato de Ivanildo Barauna" />
+          <img src="/assets/ivanildo-profile.png" alt={copy.portraitAlt} />
         </div>
       </section>
 
       <section className="atlas-section" id="atlas">
         <div className="section-heading centered">
           <p className="eyebrow"><span /> Systems Atlas</p>
-          <h2>Arquitetura de ponta a ponta</h2>
-          <p>A interseção entre Dados e Software orientada a impacto.</p>
+          <h2>{copy.atlasTitle}</h2>
+          <p>{copy.atlasSubtitle}</p>
         </div>
 
-        <div className="atlas" aria-label="Mapa de competências conectando dados e software">
+        <div className="atlas" aria-label={copy.atlasLabel}>
           <div className="skill-column data-column">
             {dataSkills.map((item) => <SkillNode key={item.title} item={item} side="data" />)}
           </div>
           <div className="venn" aria-hidden="true">
-            <div className="venn-circle venn-data"><span>Dados</span></div>
-            <div className="venn-circle venn-software"><span>Software</span></div>
+            <div className="venn-circle venn-data"><span>{copy.data}</span></div>
+            <div className="venn-circle venn-software"><span>{copy.software}</span></div>
             <div className="intersection">
               <HiServerStack />
-              <span>Arquitetura<br />de ponta<br />a ponta</span>
+              <span>{copy.architecture}</span>
             </div>
           </div>
           <div className="skill-column software-column">
@@ -117,73 +143,68 @@ export function App() {
         </div>
 
         <div className="outcomes">
-          <Outcome icon={HiMagnifyingGlass} title="Entender o problema">Contexto antes da tecnologia.</Outcome>
+          <Outcome icon={HiMagnifyingGlass} title={copy.outcomes[0][0]}>{copy.outcomes[0][1]}</Outcome>
           <span className="outcome-arrow"><HiArrowRight /></span>
-          <Outcome icon={HiCodeBracket} title="Construir a solução">Dados e software, juntos.</Outcome>
+          <Outcome icon={HiCodeBracket} title={copy.outcomes[1][0]}>{copy.outcomes[1][1]}</Outcome>
           <span className="outcome-arrow"><HiArrowRight /></span>
-          <Outcome icon={HiPresentationChartLine} title="Gerar impacto">Tecnologia que entrega valor.</Outcome>
+          <Outcome icon={HiPresentationChartLine} title={copy.outcomes[2][0]}>{copy.outcomes[2][1]}</Outcome>
         </div>
       </section>
 
       <section className="featured" id="projetos">
         <div className="featured-copy">
-          <p className="eyebrow"><span /> Projeto em destaque</p>
+          <p className="eyebrow"><span /> {copy.featured}</p>
           <h2>data-pipeline-<br />async-ingest</h2>
-          <p>Pipeline assíncrono para processamento de streaming com Pub/Sub, Dataflow, Apache Beam e Python.</p>
+          <p>{copy.featuredDescription}</p>
           <ul>
-            <li>Ingestão assíncrona com Pub/Sub e Dataflow</li>
-            <li>Transformações escaláveis com Apache Beam</li>
-            <li>Código modular, testável e orientado à manutenção</li>
+            {copy.featuredBullets.map((item) => <li key={item}>{item}</li>)}
           </ul>
-          <a className="outline-cta" href="https://github.com/ivanildobarauna-dev/data-pipeline-async-ingest" target="_blank" rel="noreferrer">Ver no GitHub <HiArrowUpRight /></a>
+          <a className="outline-cta" href="https://github.com/ivanildobarauna-dev/data-pipeline-async-ingest" target="_blank" rel="noreferrer">{copy.github} <HiArrowUpRight /></a>
         </div>
 
-        <div className="pipeline-panel" aria-label="Fluxo do projeto data pipeline async ingest">
-          <div className="pipeline-labels"><span>Fontes</span><span>Processamento</span><span>Armazenamento</span></div>
+        <div className="pipeline-panel" aria-label={copy.pipelineLabel}>
+          <div className="pipeline-labels">{copy.pipelineHeaders.map((item) => <span key={item}>{item}</span>)}</div>
           <div className="pipeline-flow">
             <div className="source-stack">
-              <span><HiCodeBracket /> APIs</span>
-              <span><HiCircleStack /> Arquivos</span>
-              <span><HiSignal /> Eventos</span>
-              <span><HiServerStack /> Sistemas</span>
+              {[HiCodeBracket, HiCircleStack, HiSignal, HiServerStack].map((Icon, index) => <span key={copy.sources[index]}><Icon /> {copy.sources[index]}</span>)}
             </div>
             <HiArrowRight className="flow-arrow" />
-            <div className="flow-box active"><HiCubeTransparent /><strong>Apache Beam<br />/ Dataflow</strong><small>Processamento paralelo</small></div>
+            <div className="flow-box active"><HiCubeTransparent /><strong>Apache Beam<br />/ Dataflow</strong><small>{copy.parallel}</small></div>
             <HiArrowRight className="flow-arrow" />
-            <div className="flow-box"><SiGooglebigquery /><strong>BigQuery</strong><small>Armazenamento analítico</small></div>
+            <div className="flow-box"><SiGooglebigquery /><strong>BigQuery</strong><small>{copy.analytical}</small></div>
           </div>
-          <div className="observability"><HiSignal /> <strong>Observabilidade</strong><span>Logs</span><i /> <span>Métricas</span><i /> <span>Alertas</span></div>
+          <div className="observability"><HiSignal /> <strong>{copy.observability}</strong><span>{copy.signals[0]}</span><i /> <span>{copy.signals[1]}</span><i /> <span>{copy.signals[2]}</span></div>
         </div>
       </section>
 
       <section className="other-projects">
-        <p className="eyebrow"><span /> Outros projetos</p>
-        {projects.map(({ title, description, href, icon: Icon }) => (
+        <p className="eyebrow"><span /> {copy.otherProjects}</p>
+        {projectDetails.map(({ title, href, icon: Icon }, index) => (
           <a className="project-row" href={href} target="_blank" rel="noreferrer" key={title}>
             <div className="project-icon"><Icon /></div>
-            <div><h3>{title}</h3><p>{description}</p></div>
-            <span>Ver no GitHub <HiArrowUpRight /></span>
+            <div><h3>{title}</h3><p>{copy.projectDescriptions[index]}</p></div>
+            <span>{copy.github} <HiArrowUpRight /></span>
           </a>
         ))}
       </section>
 
       <section className="experience" id="experiencia">
         <div>
-          <p className="eyebrow"><span /> Experiência</p>
-          <h2>Uma trajetória entre<br />dados e software.</h2>
+          <p className="eyebrow"><span /> {copy.experience}</p>
+          <h2>{copy.experienceTitle}</h2>
         </div>
         <div className="experience-list">
-          <article><span>2023 — atual</span><h3>Mercado Livre</h3><p>Engenheiro de Dados Sênior</p></article>
-          <article><span>2022 — 2023</span><h3>C6 Bank</h3><p>Business Intelligence &amp; Dados</p></article>
-          <article><span>2018 — 2022</span><h3>Embracon</h3><p>Aplicações Digitais &amp; BI</p></article>
+          <article><span>{copy.current}</span><h3>Mercado Livre</h3><p>{copy.roles[0]}</p></article>
+          <article><span>2022 — 2023</span><h3>C6 Bank</h3><p>{copy.roles[1]}</p></article>
+          <article><span>2018 — 2022</span><h3>Embracon</h3><p>{copy.roles[2]}</p></article>
         </div>
       </section>
 
       <footer id="contato">
-        <p>Tem um problema complexo?</p>
-        <h2>Vamos conectar as peças.</h2>
-        <a className="primary-cta" href="mailto:contato@ivanildobarauna.dev">Entre em contato <HiArrowUpRight /></a>
-        <div className="footer-bottom"><span>© 2026 Ivanildo Barauna</span><a href="#inicio">Voltar ao topo <HiArrowDown /></a></div>
+        <p>{copy.footerQuestion}</p>
+        <h2>{copy.footerTitle}</h2>
+        <a className="primary-cta" href="mailto:contato@ivanildobarauna.dev">{copy.contact} <HiArrowUpRight /></a>
+        <div className="footer-bottom"><span>© 2026 Ivanildo Barauna</span><a href="#inicio">{copy.backTop} <HiArrowDown /></a></div>
       </footer>
     </main>
   );
