@@ -5,13 +5,13 @@ import { LanguageProvider } from "@/i18n/LanguageProvider";
 
 export const metadata: Metadata = {
   title: {
-    default: 'Ivanildo Barauna - Data & Software Engineer',
+    default: 'Ivanildo Barauna - Senior Software Engineer',
     template: '%s | Ivanildo Barauna'
   },
-  description: 'Portfólio de Ivanildo Barauna, com projetos em Dados & Analytics',
+  description: 'Portfólio de Ivanildo Barauna, Senior Software Engineer no Mercado Livre, com atuação em software, dados, arquitetura e sistemas de decisão.',
   openGraph: {
-    title: 'Ivanildo Barauna - Data & Software Engineer',
-    description: 'Portfólio com projetos, experiência profissional e soluções para backend e Dados & Analytics.',
+    title: 'Ivanildo Barauna - Senior Software Engineer',
+    description: 'Software Engineering, Data Engineering e arquitetura para transformar problemas de negócio em sistemas de decisão prontos para produção.',
     url: 'https://ivanildobarauna.dev',
     type: 'website',
   },

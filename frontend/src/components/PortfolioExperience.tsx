@@ -304,8 +304,8 @@ export default function PortfolioExperience({
       <section id="home" data-testid="hero-section" className="portfolio-hero">
         <div className="portfolio-hero-copy">
           <h1>Ivanildo<br />Barauna</h1>
-          <p className="portfolio-eyebrow"><span /> {t('Data & Software Engineer')}</p>
-          <p className="portfolio-lead">{t('Projeto e construo sistemas que conectam Engenharia de Software e Dados, transformando insights analíticos em sistemas de decisão prontos para produção — da ingestão à ação.')}</p>
+          <p className="portfolio-eyebrow"><span /> {t('Senior Software Engineer @ Mercado Livre')}</p>
+          <p className="portfolio-lead">{t('Projeto e construo sistemas que conectam Engenharia de Software, Dados e Arquitetura para transformar problemas complexos de negócio em decisões automatizadas e soluções prontas para produção — da ingestão à ação.')}</p>
           <div className="portfolio-hero-socials" aria-label={t('Redes sociais')}>
             {socialLinks.map(link => {
               const Icon = socialIconMap[link.type];
@@ -321,9 +321,9 @@ export default function PortfolioExperience({
             <span><strong>{t('+14 anos')}</strong> {t('de experiência profissional na área de tecnologia')}</span>
           </div>
           <p className="portfolio-proof" aria-label={t('Áreas de especialidade')}>
-            <span><strong>Analytics</strong><i /></span>
             <span><strong>Software Engineering</strong><i /></span>
-            <span><strong>Data Pipelines</strong></span>
+            <span><strong>Data Engineering</strong><i /></span>
+            <span><strong>Software Architecture</strong></span>
           </p>
           <a className="portfolio-scroll-cue" href="#about"><span>{t('Explore a solução')}</span><i aria-hidden="true">↓</i></a>
         </div>
@@ -366,12 +366,12 @@ export default function PortfolioExperience({
         <div ref={featuredSolutionRef} className="portfolio-featured">
           <div className="portfolio-featured-copy">
             <p className="portfolio-eyebrow"><span /> {t('Solução em destaque')}</p>
-            <h2>Real-time Event<br />Processing Pipeline</h2>
-            <p>{t('Uma solução end-to-end que transforma dados recebidos por requisições de API em informações prontas para análise: a Producer API publica eventos no Pub/Sub; o pipeline assíncrono os processa no Dataflow e os armazena no BigQuery.')}</p>
+            <h2>Customer dispute<br />decision system</h2>
+            <p>{t('Sistema de decisão construído do zero para lidar com disputas de clientes de alto risco nos canais Reclame Aqui, Consumidor.gov.br e Procon, usando regras de elegibilidade, lógica de negócio e templates de resposta.')}</p>
             <ul>
-              <li>{t('Software que gera eventos de negócio')}</li>
-              <li>{t('Processamento assíncrono e escalável')}</li>
-              <li>{t('Dados disponíveis para analytics')}</li>
+              <li>{t('Regras de negócio operacionalizadas em software')}</li>
+              <li>{t('Decisões automatizadas com rastreabilidade')}</li>
+              <li>{t('Arquitetura preparada para evolução')}</li>
             </ul>
             <div className="portfolio-repo-links" aria-label={t('Repositórios da solução')}>
                 <a className="portfolio-outline" href="https://github.com/IvanildoBarauna/data-producer-api" target="_blank" rel="noreferrer"><FaGithub aria-hidden="true" /> Producer API <FaExternalLinkAlt aria-hidden="true" /></a>

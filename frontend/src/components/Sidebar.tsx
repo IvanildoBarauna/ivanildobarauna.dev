@@ -70,7 +70,7 @@ const Sidebar = () => {
           />
         </div>
         <h1 className="text-xl font-bold">Ivanildo Barauna</h1>
-        <p className="text-gray-400 mb-4 text-center text-sm md:text-base">Engenheiro de Dados Senior / Programador Backend</p>
+        <p className="text-gray-400 mb-4 text-center text-sm md:text-base">Senior Software Engineer / Data & Software Architecture</p>
         
         <div className="flex justify-center space-x-4 mb-8">
           {!loading && !error && socialLinks.map((link) => {
