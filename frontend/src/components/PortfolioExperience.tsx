@@ -306,6 +306,7 @@ export default function PortfolioExperience({
           <h1>Ivanildo<br />Barauna</h1>
           <p className="portfolio-eyebrow"><span /> {t('Senior Software Engineer @ Mercado Livre')}</p>
           <p className="portfolio-lead">{t('Projeto e construo sistemas que conectam Engenharia de Software, Dados e Arquitetura para transformar problemas complexos de negócio em decisões automatizadas e soluções prontas para produção — da ingestão à ação.')}</p>
+          <a className="portfolio-contact-cta" href="mailto:contato@ivanildobarauna.dev">{t('Entre em contato')}</a>
           <div className="portfolio-hero-socials" aria-label={t('Redes sociais')}>
             {socialLinks.map(link => {
               const Icon = socialIconMap[link.type];
@@ -497,6 +498,11 @@ export default function PortfolioExperience({
 
       <footer className="portfolio-footer">
         <p>Ivanildo Barauna</p>
+        <div className="portfolio-footer-links">
+          <a href="mailto:contato@ivanildobarauna.dev">contato@ivanildobarauna.dev</a>
+          <a href="/privacidade">Privacidade</a>
+          <a href="/termos">Termos de uso</a>
+        </div>
         <div className="portfolio-footer-socials" aria-label={t('Redes sociais')}>
           {socialLinks.map(link => {
             const Icon = socialIconMap[link.type];
@@ -509,6 +515,7 @@ export default function PortfolioExperience({
         </div>
         <a className="portfolio-back-to-top" href="#home">{t('Voltar ao início')} <FaArrowUp aria-hidden="true" /></a>
       </footer>
+      <a className="portfolio-mobile-contact" href="mailto:contato@ivanildobarauna.dev">{t('Entre em contato')}</a>
 
     </main>
   );
