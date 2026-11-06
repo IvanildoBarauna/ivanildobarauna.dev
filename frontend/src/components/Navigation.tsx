@@ -63,6 +63,7 @@ export default function Navigation() {
       <nav className={open ? 'is-open' : ''} aria-label={t('Navegação principal')}>
         {items.map(item => <a key={item.id} href={`#${item.id}`} className={active === item.id ? 'active' : ''} aria-current={active === item.id ? 'page' : undefined} onClick={() => { setActive(item.id); setOpen(false); }}>{t(item.label)}</a>)}
       </nav>
+      <a className="atlas-nav-contact" href="mailto:contato@ivanildobarauna.dev">{t('Entre em contato')}</a>
       <div className="atlas-language" role="group" aria-label={t('Selecionar idioma')}>
         {supportedLanguages.map(code => <button type="button" key={code} className={language === code ? 'active' : ''} aria-pressed={language === code} onClick={() => setLanguage(code)}>
           <ReactCountryFlag countryCode={languageFlags[code]} svg aria-hidden="true" title="" />

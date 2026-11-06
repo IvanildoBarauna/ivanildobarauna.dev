@@ -13,6 +13,7 @@ const dictionaries: Record<Language, Record<string, string>> = {
     'Complete solution for extracting currency pair quotes data with comprehensive testing, parameter validation, flexible configuration management, Hexagonal Architecture, CI/CD pipelines, code quality tools, and detailed documentation.': 'Solução completa para extrair cotações de pares de moedas, com testes abrangentes, validação de parâmetros, configuração flexível, arquitetura hexagonal, pipelines de CI/CD e ferramentas de qualidade.',
   },
   en: {
+    'Entre em contato': 'Get in touch',
     'Download CV': 'Download CV', 'Data & Software Engineer': 'Data & Software Engineer', 'Response example': 'Response example', 'Events Producer': 'Events Producer', 'Ingest & Process Events': 'Ingest & Process Events', 'Store Processed Events': 'Store Processed Events',
     'Sobre mim': 'About me', 'Projetos': 'Projects', 'Experiência': 'Experience', 'Formação': 'Education', 'Senior Software Engineer @ Mercado Livre': 'Senior Software Engineer @ Mercado Livre', 'Senior Software Engineer': 'Senior Software Engineer', 'Senior Data Engineer': 'Senior Data Engineer',
     'Navegação principal': 'Main navigation', 'Abrir menu': 'Open menu', 'Fechar menu': 'Close menu', 'Selecionar idioma': 'Select language',
@@ -44,6 +45,7 @@ const dictionaries: Record<Language, Record<string, string>> = {
     'Desenvolvimento de relatórios no Excel usando ferramentas de SSBI (Power Query, Power Pivot e Power View). Automatização de tarefas manuais usando programação VBA': 'Developed Excel reports using SSBI tools (Power Query, Power Pivot, and Power View) and automated manual tasks with VBA.',
   },
   es: {
+    'Entre em contato': 'Contáctame',
     'Download CV': 'Descargar CV', 'Data & Software Engineer': 'Ingeniero de Datos y Software', 'Response example': 'Ejemplo de respuesta', 'Events Producer': 'Productor de eventos', 'Ingest & Process Events': 'Ingestar y procesar eventos', 'Store Processed Events': 'Almacenar eventos procesados',
     'Sobre mim': 'Sobre mí', 'Projetos': 'Proyectos', 'Experiência': 'Experiencia', 'Formação': 'Formación', 'Senior Software Engineer @ Mercado Livre': 'Ingeniero de Software Sénior en Mercado Livre', 'Senior Software Engineer': 'Ingeniero de Software Sénior', 'Senior Data Engineer': 'Ingeniero de Datos Sénior',
     'Navegação principal': 'Navegación principal', 'Abrir menu': 'Abrir menú', 'Fechar menu': 'Cerrar menú', 'Selecionar idioma': 'Seleccionar idioma',
